@@ -8,6 +8,6 @@ pyextremes
 pyproj
 requests
 scipy
-streamlit=
+streamlit
 streamlit_folium
 windrose
