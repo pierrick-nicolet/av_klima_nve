@@ -35,21 +35,21 @@ st.write('Finne automatisk nærmaste stadsnavn dersom det finnes eit registert n
 try:
     kart_kord_lat = output['last_clicked']['lat']
     kart_kord_lng = output['last_clicked']['lng']
-    utm_øst, utm_nord = transformer.transform(kart_kord_lat, kart_kord_lng)
+    utm_ost, utm_nord = transformer.transform(kart_kord_lat, kart_kord_lng)
     utm_nord = round(utm_nord,2)
-    utm_øst = round(utm_øst,2)
+    utm_ost = round(utm_ost,2)
 
 except TypeError:
     utm_nord  = 'Trykk i kart, eller skriv inn koordinat'
-    utm_øst = 'Trykk i kart, eller skriv inn koordinat'
+    utm_ost = 'Trykk i kart, eller skriv inn koordinat'
 
 
 lat = st.text_input("NORD(UTM 33)", utm_nord)
-lon = st.text_input("ØST  (UTM 33)", utm_øst)
+lon = st.text_input("ØST  (UTM 33)", utm_ost)
 
 
 try:
-    navn = klimadata.stedsnavn(utm_nord, utm_øst)['navn'][0]['stedsnavn'][0]['skrivemåte']
+    navn = klimadata.stedsnavn(utm_nord, utm_ost)['navn'][0]['stedsnavn'][0]['skrivemåte']
 except (IndexError, KeyError):
     navn = 'Skriv inn navn'
 #st.write(navn)
@@ -83,7 +83,7 @@ if knapp:
             key='download-csv'
             )
     if plottype == 'Klimaoversikt med 3 døgn snø og returverdi':
-        st.pyplot(plot.klima_snø_oversikt(df, lokalitet))
+        st.pyplot(plot.klima_sno_oversikt(df, lokalitet))
         st.download_button(
             "Last ned klimadata",
             df.to_csv().encode('utf-8'),

@@ -26,14 +26,14 @@ def nve_api(lat, lon, startdato, sluttdato, para):
     verdier = r.json()
     return verdier
 
-def stedsnavn(utm_nord, utm_øst):
-    url = f'https://ws.geonorge.no/stedsnavn/v1/punkt?nord={utm_nord}&ost={utm_øst}&koordsys=5973&radius=500&utkoordsys=4258&treffPerSide=1&side=1'
+def stedsnavn(utm_nord, utm_ost):
+    url = f'https://ws.geonorge.no/stedsnavn/v1/punkt?nord={utm_nord}&ost={utm_ost}&koordsys=5973&radius=500&utkoordsys=4258&treffPerSide=1&side=1'
     r = requests.get(url)
     verdier = r.json()
     #for verdi in
     return verdier
 
-def hent_data_klima_døgn(lat, lon, startdato, sluttdato, parametere):
+def hent_data_klima_dogn(lat, lon, startdato, sluttdato, parametere):
     parameterdict = {}
     for parameter in parametere:
         
@@ -52,11 +52,10 @@ def klima_dataframe(lat, lon, startdato, sluttdato, parametere):
         datetime.datetime(int(sluttdato[0:4]), int(sluttdato[5:7]), int(sluttdato[8:10])))
     )
     df[df > 1000] = 0
-    df = rullande_3døgn_nedbør(df)
+    df = rullande_3dogn_nedbor(df)
     return df
 
 def maxdf(df):
-    print(df)
     maxdf = (pd.DataFrame(df['sdfsw3d'].groupby(pd.Grouper(freq='Y')).max())
              .assign(rr = df['rr'].groupby(pd.Grouper(freq='Y')).max(),
                     rr3 = df['rr3'].groupby(pd.Grouper(freq='Y')).max(),
@@ -64,20 +63,20 @@ def maxdf(df):
         )
     return maxdf
 
-def vind_nedbør(df):
+def vind_nedbor(df):
     return df.where(df.rr > 0.2).dropna()
 
 def vind_regn(df):
     return df.where(df.rrl > 0.2).dropna()
 
-def vind_snø_fsw(df):
+def vind_sno_fsw(df):
     return df.where(df.fsw > 0.2).dropna()
 
-def vind_snø_rr_tm(df):
+def vind_sno_rr_tm(df):
     return (df.where(df.rr > 0.2).dropna()
             .where(df.tm < 1).dropna())
 
-def rullande_3døgn_nedbør(dataframe):
+def rullande_3dogn_nedbor(dataframe):
     df = (dataframe.assign(rr3 = dataframe['rr'].rolling(3).sum().round(2))
      .fillna(0)
     )
