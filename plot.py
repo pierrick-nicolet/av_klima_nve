@@ -24,22 +24,30 @@ def plot_normaler(klima, ax1=None):
     if ax1 is None:
         ax1 = plt.gca()
     
-    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1991 - 2020)')
+    
+    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1990 - 2021)')
     ax1.bar(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['rr'], width=0.5, snap=False)
     ax1.set_xlabel('Måned')
     ax1.set_ylabel('Nedbør (mm)')
-    ax1.set_ylim(0, maanedlig_gjennomsnitt['rr'].max()+20)
-    #ax1.text('1960', aar_df['rr'].max()+20, "Gjennomsnittlig månedsnedbør:  " + str(int(snitt)) + ' mm')
+    ax1.set_ylim(0, maanedlig_gjennomsnitt['rr'].max()*1.15)
+
+    for i in range(1,len(maanedlig_gjennomsnitt['rr'])+1):
+        ax1.text(i, maanedlig_gjennomsnitt['rr'][i] + 5, round(maanedlig_gjennomsnitt['rr'],1)[i], ha = 'center', fontweight='regular')
 
     ax2 = ax1.twinx()#Setter ny akse på høgre side 
     ax2.plot(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['tm'], 'r', label='Gjennomsnittstemperatur', linewidth=3.5)
+
+    for i in range(1,len(maanedlig_gjennomsnitt['tm'])+1):
+        ax2.text(i, maanedlig_gjennomsnitt['tm'][i], round(maanedlig_gjennomsnitt['tm'],1)[i], ha = 'center', fontweight='semibold')
+        
+        
     ax2.set_ylim(maanedlig_gjennomsnitt['tm'].min()-2,maanedlig_gjennomsnitt['tm'].max()+5)
     ax2.set_ylabel(u'Temperatur (\u00B0C)')
     ax2.yaxis.set_tick_params(length=0)
     ax2.xaxis.set_major_locator(ticker.MultipleLocator(1))
     ax2.axhline(0, linestyle='--', color='grey', linewidth=0.5)
     ax2.get_yaxis().set_visible(True)
-    ax2.legend()
+    ax2.legend(loc='best')
 
     return ax1, ax2
 
