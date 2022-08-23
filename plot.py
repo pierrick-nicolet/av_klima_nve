@@ -31,14 +31,14 @@ def plot_normaler(klima, ax1=None):
     ax1.set_ylabel('Nedbør (mm)')
     ax1.set_ylim(0, maanedlig_gjennomsnitt['rr'].max()*1.15)
 
-    for i in range(1,len(maanedlig_gjennomsnitt['rr'])+1):
-        ax1.text(i, maanedlig_gjennomsnitt['rr'][i] + 5, round(maanedlig_gjennomsnitt['rr'],1)[i], ha = 'center', fontweight='regular')
+    # for i in range(1,len(maanedlig_gjennomsnitt['rr'])+1):
+    #     ax1.text(i, maanedlig_gjennomsnitt['rr'][i] + 5, round(maanedlig_gjennomsnitt['rr'],1)[i], ha = 'center', fontweight='regular')
 
     ax2 = ax1.twinx()#Setter ny akse på høgre side 
     ax2.plot(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['tm'], 'r', label='Gjennomsnittstemperatur', linewidth=3.5)
 
-    for i in range(1,len(maanedlig_gjennomsnitt['tm'])+1):
-        ax2.text(i, maanedlig_gjennomsnitt['tm'][i], round(maanedlig_gjennomsnitt['tm'],1)[i], ha = 'center', fontweight='semibold')
+    # for i in range(1,len(maanedlig_gjennomsnitt['tm'])+1):
+    #     ax2.text(i, maanedlig_gjennomsnitt['tm'][i], round(maanedlig_gjennomsnitt['tm'],1)[i], ha = 'center', fontweight='semibold')
         
         
     ax2.set_ylim(maanedlig_gjennomsnitt['tm'].min()-2,maanedlig_gjennomsnitt['tm'].max()+5)
@@ -51,6 +51,52 @@ def plot_normaler(klima, ax1=None):
 
     return ax1, ax2
 
+def normaler_annotert(klima, ax1=None):
+    statistikk_per_maaned = pd.DataFrame({
+        'rr':klima['rr'].loc['1991':'2020'].groupby(pd.Grouper(freq='M')).sum(),
+        'tm':klima['tm'].loc['1991':'2020'].groupby(pd.Grouper(freq='M')).mean()})
+
+    maanedlig_gjennomsnitt = pd.DataFrame({
+        'rr':statistikk_per_maaned['rr'].groupby(statistikk_per_maaned.index.month).mean(),
+        'tm':statistikk_per_maaned['tm'].groupby(statistikk_per_maaned.index.month).mean(),
+        'tm_min':statistikk_per_maaned['tm'].groupby(statistikk_per_maaned.index.month).min(),
+        'tm_max':statistikk_per_maaned['tm'].groupby(statistikk_per_maaned.index.month).max()})
+
+    if ax1 is None:
+        ax1 = plt.gca()
+        
+    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1990 - 2021)')
+    ax1.bar(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['rr'], width=0.5, snap=False)
+    ax1.set_xlabel('Måned')
+    ax1.set_ylabel('Nedbør (mm)')
+    ax1.set_ylim(0, maanedlig_gjennomsnitt['rr'].max()*1.15)
+
+    for i in range(1,len(maanedlig_gjennomsnitt['rr'])+1):
+        ax1.text(i, maanedlig_gjennomsnitt['rr'][i] + 5, round(maanedlig_gjennomsnitt['rr'],1)[i], ha = 'center', fontweight='regular')
+
+    ax2 = ax1.twinx()#Setter ny akse på høgre side 
+    ax2.plot(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['tm'], 'r', label='Gjennomsnittstemperatur', linewidth=3.5)
+    ax2.plot(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['tm_min'], 'r', linestyle='--', linewidth=1)
+    ax2.plot(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['tm_max'], 'r', linestyle='--', linewidth=1)
+
+    for i in range(1,len(maanedlig_gjennomsnitt['tm'])+1):
+        ax2.text(i, maanedlig_gjennomsnitt['tm'][i], round(maanedlig_gjennomsnitt['tm'],1)[i], ha = 'center', fontweight='semibold')
+
+    for i in range(1,len(maanedlig_gjennomsnitt['tm_min'])+1):
+        ax2.text(i, maanedlig_gjennomsnitt['tm_min'][i], round(maanedlig_gjennomsnitt['tm_min'],1)[i], ha = 'center', fontweight='ultralight')
+
+    for i in range(1,len(maanedlig_gjennomsnitt['tm_max'])+1):
+        ax2.text(i, maanedlig_gjennomsnitt['tm_max'][i], round(maanedlig_gjennomsnitt['tm_max'],1)[i], ha = 'center', fontweight='ultralight')
+        
+    ax2.set_ylim(maanedlig_gjennomsnitt['tm_min'].min()-2,maanedlig_gjennomsnitt['tm_max'].max()+5)
+    ax2.set_ylabel(u'Temperatur (\u00B0C)')
+    ax2.yaxis.set_tick_params(length=0)
+    ax2.xaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax2.axhline(0, linestyle='--', color='grey', linewidth=0.5)
+    ax2.get_yaxis().set_visible(True)
+    #ax2.legend(loc='best')
+
+    return ax1, ax2
 
 def plot_aarsnedbor(df, ax1=None):
     aarsnedbor= df['rr'].groupby(pd.Grouper(freq='Y')).sum()
@@ -335,12 +381,16 @@ def vind(vind_df):
 
     return fig
 
-def klimaoversikt(df, lokalitet):
+def klimaoversikt(df, lokalitet, annotert):
     fig = plt.figure(figsize=(20, 12))
 
     ax1 = fig.add_subplot(221)
 
-    ax1, ax2 = plot_normaler(df)
+    if annotert:
+        ax1, ax2 = normaler_annotert(df)
+    else:
+        ax1, ax2 = plot_normaler(df)
+    
     ax3 = fig.add_subplot(222)
 
     ax3, ax4 = snomengde(df)

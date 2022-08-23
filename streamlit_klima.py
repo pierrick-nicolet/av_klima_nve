@@ -63,6 +63,7 @@ startdato = '1958-01-01'
 sluttdato = '2021-12-31'
 
 plottype = st.radio('Velg plottype', ('Klimaoversikt', 'Klimaoversikt med 3 døgn snø og returverdi'))
+annotert = st.checkbox('Vis tall på normalplot')
 vind = st.checkbox('Vindanalyse')
 
 knapp = st.button('Vis plott')
@@ -74,7 +75,7 @@ if knapp:
 
     if plottype == 'Klimaoversikt':
         st.write('Trykk på pil oppe i høgre hjørne for å utvide plot')
-        st.pyplot(plot.klimaoversikt(df, lokalitet))
+        st.pyplot(plot.klimaoversikt(df, lokalitet, annotert))
         #klimaoversikt(df)
         st.download_button(
             "Last ned klimadata",
