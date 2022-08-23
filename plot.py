@@ -13,17 +13,18 @@ from klimadata import *
 
 def plot_normaler(klima, ax1=None):
     statistikk_per_maaned = pd.DataFrame({
-        'rr':klima['rr'].groupby(pd.Grouper(freq='M')).sum(),
-        'tm':klima['tm'].groupby(pd.Grouper(freq='M')).mean()})
+        'rr':klima['rr'].loc['1991':'2020'].groupby(pd.Grouper(freq='M')).sum(),
+        'tm':klima['tm'].loc['1991':'2020'].groupby(pd.Grouper(freq='M')).mean()})
 
     maanedlig_gjennomsnitt = pd.DataFrame({
         'rr':statistikk_per_maaned['rr'].groupby(statistikk_per_maaned.index.month).mean(),
         'tm':statistikk_per_maaned['tm'].groupby(statistikk_per_maaned.index.month).mean()})
 
+
     if ax1 is None:
         ax1 = plt.gca()
     
-    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur ')
+    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1991 - 2020)')
     ax1.bar(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['rr'], width=0.5, snap=False)
     ax1.set_xlabel('Måned')
     ax1.set_ylabel('Nedbør (mm)')
@@ -123,7 +124,7 @@ def snodjupne(df, ax1=None):
 
     #fig, ax1 = plt.subplots()
 
-    ax1.set_title('Maksimal snødjupe fra')
+    ax1.set_title('Maksimal snødjupe')
     ax1.bar(sno.index, sno, width=320, snap=False, color='powderblue') 
     ax1.set_xlabel('Årstall')
     ax1.set_ylabel('Snødjupne (cm)')
@@ -253,7 +254,7 @@ def snomengde(df, ax1=None):
     ax1.plot(snodager.index, snodager['sd_min'], label='Min snømengde')
     ax1.xaxis.set_major_locator(MultipleLocator(32))
     #ax1.xaxis.set_major_formatter(FormatStrFormatter('%m'))
-    ax1.set_title('Periode med snø - døgntemperatur')
+    ax1.set_title('Periode med snø - døgntemperatur (1958-2022)')
     ax1.set_xlabel('Måned')
     ax1.set_ylabel('Snøhøgde (cm)')
     ax1.xaxis.set_major_formatter(DateFormatter("%m"))
