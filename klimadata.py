@@ -4,6 +4,7 @@ import requests
 import extreme as e
 import numpy as np
 import matplotlib.pyplot as plt
+import streamlit as st
 
 def nve_api(lat, lon, startdato, sluttdato, para):
     """Henter data frå NVE api GridTimeSeries
@@ -39,6 +40,7 @@ def hent_data_klima_dogn(lat, lon, startdato, sluttdato, parametere):
         
         parameterdict[parameter] = nve_api(lat, lon, startdato, sluttdato, parameter)['Data']
     return parameterdict    
+
 
 def klima_dataframe(lat, lon, startdato, sluttdato, parametere):
     parameterdict = {}

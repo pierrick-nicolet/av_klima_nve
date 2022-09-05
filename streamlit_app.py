@@ -7,7 +7,7 @@ import plot
 import folium
 from streamlit_folium import st_folium
 import pandas as pd
-
+st.header('AV-Klima')
 parameterliste = ['rr', 'tm', 'sd', 'fsw', 'sdfsw', 'sdfsw3d']
 transformer = Transformer.from_crs(4326, 5973)
 m = folium.Map(location=[62.14497, 9.404296], zoom_start=5)
@@ -29,7 +29,7 @@ output = st_folium(m, width = 700, height=500)
 utm_lat = 0
 utm_lon = 0
 st.write('Trykk i kartet, eller skriv inn koordinater for å velge klimapunkt.')
-st.write('Finne automatisk nærmaste stadsnavn dersom det finnes eit registert navn innafor 500m radius.')
+st.write('Finn automatisk nærmaste stadnavn dersom det er eit navn innafor 500m radius.')
 
 
 try:
@@ -63,6 +63,7 @@ startdato = '1958-01-01'
 sluttdato = '2021-12-31'
 
 plottype = st.radio('Velg plottype', ('Klimaoversikt', 'Klimaoversikt med 3 døgn snø og returverdi'))
+annotert = st.checkbox('Vis tall på normalplot')
 vind = st.checkbox('Vindanalyse')
 
 knapp = st.button('Vis plott')
@@ -73,7 +74,8 @@ if knapp:
     df = klimadata.klima_dataframe(lon, lat, startdato, sluttdato, parameterliste)
 
     if plottype == 'Klimaoversikt':
-        st.pyplot(plot.klimaoversikt(df, lokalitet))
+        st.write('Trykk på pil oppe i høgre hjørne for å utvide plot')
+        st.pyplot(plot.klimaoversikt(df, lokalitet, annotert))
         #klimaoversikt(df)
         st.download_button(
             "Last ned klimadata",
@@ -83,7 +85,8 @@ if knapp:
             key='download-csv'
             )
     if plottype == 'Klimaoversikt med 3 døgn snø og returverdi':
-        st.pyplot(plot.klima_sno_oversikt(df, lokalitet))
+        st.write('Trykk på pil oppe i høgre hjørne for å utvide plot')
+        st.pyplot(plot.klima_sno_oversikt(df, lokalitet, annotert))
         st.download_button(
             "Last ned klimadata",
             df.to_csv().encode('utf-8'),
@@ -92,6 +95,7 @@ if knapp:
             key='download-csv'
             )
     if vind:
+        st.write('Trykk på pil oppe i høgre hjørne for å utvide plot')
         vind_para = ['windDirection10m24h06', 'windSpeed10m24h06', 'rr', 'tm', 'fsw', 'rrl']
         vindslutt = '2022-03-01'
         vindstart = '2018-03-01'
@@ -102,9 +106,10 @@ if knapp:
             vind_df.to_csv().encode('utf-8'),
             "vinddata.csv",
             "text/csv",
-            key='download-csv'
+            key='download-csv-vind'
             )
-
+        st.write('Vinddata må brukast med forsiktigheit. Vinddata finnes kunn fra mars 2018 - mars 2022. Vinddata bør hentes fra høgaste punkt i området, og ikkje nede i fjord/dalstrøk.')
+        st.write('Vær serleg obs på at det i områder er få dager med snø for å få fram snøførende vindretning.')
 st.write('Scriptet henter ned data frå NVE sitt Grid Time Series API, som er visualisert på xgeo.no')
 st.write('Parametere som er brukt er: ')
 
@@ -119,3 +124,4 @@ parametere = {
     'windSpeed10m24h06':'Vindhastighet 10m døgn -  m/s'
 }
 st.json(parametere)
+st.write('Ved spørsmål eller feil ta kontakt på jan.aalbu@asplanviak.no')

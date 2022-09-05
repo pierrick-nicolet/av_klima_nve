@@ -6,7 +6,7 @@ import matplotlib.ticker as ticker
 from matplotlib.ticker import MultipleLocator
 from matplotlib.dates import DateFormatter
 import datetime
-from pyextremes import EVA
+#from pyextremes import EVA
 import numpy as np
 import windrose
 from klimadata import *
@@ -25,7 +25,7 @@ def plot_normaler(klima, ax1=None):
         ax1 = plt.gca()
     
     
-    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1990 - 2021)')
+    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1991 - 2020)')
     ax1.bar(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['rr'], width=0.5, snap=False)
     ax1.set_xlabel('Måned')
     ax1.set_ylabel('Nedbør (mm)')
@@ -289,6 +289,7 @@ def nysnodjupne_3d(df, ax1=None):
     return ax1, ax2
 
 def snomengde(df, ax1=None):
+    df = df.loc['1991':'2020']
     snodager = (df['sd']
             .groupby(df.index.strftime('%m-%d'))
             .mean()
@@ -302,13 +303,13 @@ def snomengde(df, ax1=None):
 
     if ax1 is None:
         ax1 = plt.gca()
-
+    
     ax1.plot(snodager.index, snodager['sd_snitt'], label='Snitt snømengde')
     ax1.plot(snodager.index, snodager['sd_max'], label='Max snømengde')
     ax1.plot(snodager.index, snodager['sd_min'], label='Min snømengde')
     ax1.xaxis.set_major_locator(MultipleLocator(32))
     #ax1.xaxis.set_major_formatter(FormatStrFormatter('%m'))
-    ax1.set_title('Periode med snø - døgntemperatur (1958-2022)')
+    ax1.set_title('Periode med snø - døgntemperatur (1991-2020)')
     ax1.set_xlabel('Måned')
     ax1.set_ylabel('Snøhøgde (cm)')
     ax1.xaxis.set_major_formatter(DateFormatter("%m"))
@@ -405,11 +406,15 @@ def klimaoversikt(df, lokalitet, annotert):
 
     return fig
 
-def klima_sno_oversikt(df, lokalitet):
+def klima_sno_oversikt(df, lokalitet, annotert):
     fig = plt.figure(figsize=(20, 18))
 
     ax1 = fig.add_subplot(321)
-    ax1, ax2 = plot_normaler(df)
+
+    if annotert:
+        ax1, ax2 = normaler_annotert(df)
+    else:
+        ax1, ax2 = plot_normaler(df)
     
     ax3 = fig.add_subplot(322)
     ax3, ax4 = snomengde(df)
