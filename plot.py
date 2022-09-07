@@ -65,7 +65,7 @@ def normaler_annotert(klima, ax1=None):
     if ax1 is None:
         ax1 = plt.gca()
         
-    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1990 - 2021)')
+    ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1991 - 2020)')
     ax1.bar(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['rr'], width=0.5, snap=False)
     ax1.set_xlabel('Måned')
     ax1.set_ylabel('Nedbør (mm)')

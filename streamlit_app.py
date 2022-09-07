@@ -124,4 +124,7 @@ parametere = {
     'windSpeed10m24h06':'Vindhastighet 10m døgn -  m/s'
 }
 st.json(parametere)
+link = '[SeNorge - Snøkart](https://www.nve.no/media/11700/hvordan-lages-sn%C3%B8kartene-i-senorge-og-xgeo.pdf)'
+st.write('Sjå link under for forklaring på snødybdeparametere som er brukt i plot for snødybder')
+st.markdown(link, unsafe_allow_html=True)
 st.write('Ved spørsmål eller feil ta kontakt på jan.aalbu@asplanviak.no')
