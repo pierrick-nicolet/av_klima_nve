@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run streamlit_klima.py
+web: sh setup.sh && streamlit run streamlit_app.py
