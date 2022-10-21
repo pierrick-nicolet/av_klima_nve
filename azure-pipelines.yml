@@ -26,7 +26,7 @@ variables:
   pythonVersion: '3.9'
 
   # Startup Command
-  StartupCommand: 'gunicorn --bind=0.0.0.0 --timeout 600 streamlit_app:streamlit'
+  StartupCommand: 'streamlit run streamlit_app.py'
 
 stages:
 - stage: Build
@@ -42,8 +42,8 @@ stages:
       displayName: 'Use Python $(pythonVersion)'
 
     - script: |
-        py -m venv .venv
-        .venv\scripts\activate
+        python -m venv antenv
+        source antenv/bin/activate
         python -m pip install --upgrade pip
         pip install setup
         pip install -r requirements.txt
