@@ -26,7 +26,7 @@ variables:
   pythonVersion: '3.9'
 
   # Startup Command
-  StartupCommand: 'streamlit run streamlit_app.py'
+  StartupCommand: 'sh setup.sh && streamlit run streamlit_app.py'
 
 stages:
 - stage: Build
@@ -90,5 +90,4 @@ stages:
               appType: 'webAppLinux'
               WebAppName: '$(webAppName)'
               packageForLinux: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-              RuntimeStack: '$(pythonVersion)'
               StartupCommand: '$(StartupCommand)'
