@@ -12,6 +12,7 @@ import windrose
 from klimadata import *
 
 def plot_normaler(klima, ax1=None):
+    '''Tar imot klimadataframe, og returnerer ax plotteobjekt fra matplotlib. Kan kombineres i samleplot, eller stå aleine'''
     statistikk_per_maaned = pd.DataFrame({
         'rr':klima['rr'].loc['1991':'2020'].groupby(pd.Grouper(freq='M')).sum(),
         'tm':klima['tm'].loc['1991':'2020'].groupby(pd.Grouper(freq='M')).mean()})
@@ -20,26 +21,17 @@ def plot_normaler(klima, ax1=None):
         'rr':statistikk_per_maaned['rr'].groupby(statistikk_per_maaned.index.month).mean(),
         'tm':statistikk_per_maaned['tm'].groupby(statistikk_per_maaned.index.month).mean()})
 
-
     if ax1 is None:
         ax1 = plt.gca()
-    
-    
+        
     ax1.set_title('Gjennomsnittlig månedsnedbør og temperatur (1991 - 2020)')
     ax1.bar(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['rr'], width=0.5, snap=False)
     ax1.set_xlabel('Måned')
     ax1.set_ylabel('Nedbør (mm)')
     ax1.set_ylim(0, maanedlig_gjennomsnitt['rr'].max()*1.15)
 
-    # for i in range(1,len(maanedlig_gjennomsnitt['rr'])+1):
-    #     ax1.text(i, maanedlig_gjennomsnitt['rr'][i] + 5, round(maanedlig_gjennomsnitt['rr'],1)[i], ha = 'center', fontweight='regular')
-
     ax2 = ax1.twinx()#Setter ny akse på høgre side 
     ax2.plot(maanedlig_gjennomsnitt.index, maanedlig_gjennomsnitt['tm'], 'r', label='Gjennomsnittstemperatur', linewidth=3.5)
-
-    # for i in range(1,len(maanedlig_gjennomsnitt['tm'])+1):
-    #     ax2.text(i, maanedlig_gjennomsnitt['tm'][i], round(maanedlig_gjennomsnitt['tm'],1)[i], ha = 'center', fontweight='semibold')
-        
         
     ax2.set_ylim(maanedlig_gjennomsnitt['tm'].min()-2,maanedlig_gjennomsnitt['tm'].max()+5)
     ax2.set_ylabel(u'Temperatur (\u00B0C)')
@@ -52,6 +44,10 @@ def plot_normaler(klima, ax1=None):
     return ax1, ax2
 
 def normaler_annotert(klima, ax1=None):
+    '''Tar imot klimadataframe, og returnerer ax plotteobjekt fra matplotlib. Kan kombineres i samleplot, eller stå aleine
+    Denne funksjonen returnerer plotteobjekt med notasjoner på grafer og søyler.
+    TODO: Kan samkøyrast med generell normalplot
+    '''
     statistikk_per_maaned = pd.DataFrame({
         'rr':klima['rr'].loc['1991':'2020'].groupby(pd.Grouper(freq='M')).sum(),
         'tm':klima['tm'].loc['1991':'2020'].groupby(pd.Grouper(freq='M')).mean()})
@@ -99,7 +95,8 @@ def normaler_annotert(klima, ax1=None):
     return ax1, ax2
 
 def plot_aarsnedbor(df, ax1=None):
-    aarsnedbor= df['rr'].groupby(pd.Grouper(freq='Y')).sum()
+    '''Tar inn klimadataframe og returnerer plot for årsnedbør'''
+    aarsnedbor = df['rr'].groupby(pd.Grouper(freq='Y')).sum()
     aarsgjennomsnitt_1961_1990 = int(aarsnedbor.loc['1961':'1990'].mean())
     aarsgjennomsnitt_1990_2020 = int(aarsnedbor.loc['1991':'2020'].mean())
 
@@ -170,13 +167,8 @@ def snodjupne(df, ax1=None):
         sno.index.map(datetime.date.toordinal)[-1]])
     y_endpoints = y0 + slope * x_endpoints
 
-    # slope, y0, r, p, stderr = stats.linregress(sno.index.map(datetime.date.toordinal), sno)
-    # x_endpoints = pd.DataFrame([sno.index[0], sno.index[-1]])
-    # y_endpoints = y0 + slope * x_endpoints
     if ax1 is None:
         ax1 = plt.gca()
-
-    #fig, ax1 = plt.subplots()
 
     ax1.set_title('Maksimal snødjupe')
     ax1.bar(sno.index, sno, width=320, snap=False, color='powderblue') 
@@ -308,7 +300,6 @@ def snomengde(df, ax1=None):
     ax1.plot(snodager.index, snodager['sd_max'], label='Max snømengde')
     ax1.plot(snodager.index, snodager['sd_min'], label='Min snømengde')
     ax1.xaxis.set_major_locator(MultipleLocator(32))
-    #ax1.xaxis.set_major_formatter(FormatStrFormatter('%m'))
     ax1.set_title('Periode med snø - døgntemperatur (1991-2020)')
     ax1.set_xlabel('Måned')
     ax1.set_ylabel('Snøhøgde (cm)')
