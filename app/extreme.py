@@ -1,3 +1,9 @@
+'''
+Based on scikit-extremes libary by Kiko Correoso
+https://github.com/kikocorreoso/scikit-extremes
+Plot functions adapted to easily integrate in other climate plots
+'''
+
 """
 Module containing classical generalistic models
 

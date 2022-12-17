@@ -6,9 +6,7 @@ import matplotlib.ticker as ticker
 from matplotlib.ticker import MultipleLocator
 from matplotlib.dates import DateFormatter
 import datetime
-#from pyextremes import EVA
 import numpy as np
-import windrose
 from klimadata import *
 
 def plot_normaler(klima, ax1=None):
@@ -99,6 +97,8 @@ def plot_aarsnedbor(df, ax1=None):
     aarsnedbor = df['rr'].groupby(pd.Grouper(freq='Y')).sum()
     aarsgjennomsnitt_1961_1990 = int(aarsnedbor.loc['1961':'1990'].mean())
     aarsgjennomsnitt_1990_2020 = int(aarsnedbor.loc['1991':'2020'].mean())
+    aarsnedbor_df = aarsnedbor.to_frame()
+    aarsnedbor_df['dato']= pd.date_range(start=str(aarsnedbor_df.index[0].year), end=str(aarsnedbor_df.index[-1].year), freq="AS")
 
     slope, y0, r, p, stderr = stats.linregress(
         aarsnedbor.index.map(datetime.date.toordinal),
@@ -113,7 +113,7 @@ def plot_aarsnedbor(df, ax1=None):
         ax1 = plt.gca()
 
     ax1.set_title('Årsnedbør')
-    ax1.bar(aarsnedbor.index,  aarsnedbor, width=320, snap=False)
+    ax1.bar(aarsnedbor_df.dato,  aarsnedbor_df['rr'], width=-320, snap=False)
     ax1.set_xlabel('Årstall')
     ax1.set_ylabel('Nedbør (mm)')
     ax1.set_ylim(aarsnedbor.min()*0.6, aarsnedbor.max()*1.1)
@@ -156,8 +156,9 @@ def snodjupne(df, ax1=None):
     maxaar = sno.idxmax() 
     snomax = sno.max() 
     snosnitt_6090 = sno.loc['1961':'1990'].mean() 
-    snosnitt_9020 = sno.loc['1991':'2020'].mean() 
-
+    snosnitt_9020 = sno.loc['1991':'2020'].mean()
+    sno_df = sno.to_frame() 
+    sno_df['dato'] = pd.date_range(start=str(sno_df.index[0].year), end=str(sno_df.index[-1].year), freq="AS")
     slope, y0, r, p, stderr = stats.linregress(
         sno.index.map(datetime.date.toordinal),
         sno)
@@ -171,7 +172,7 @@ def snodjupne(df, ax1=None):
         ax1 = plt.gca()
 
     ax1.set_title('Maksimal snødjupe')
-    ax1.bar(sno.index, sno, width=320, snap=False, color='powderblue') 
+    ax1.bar(sno_df.dato, sno_df['sd'], width=320, snap=False, color='powderblue') 
     ax1.set_xlabel('Årstall')
     ax1.set_ylabel('Snødjupne (cm)')
     ax1.set_ylim(sno.min()*0.6, sno.max()*1.1)
@@ -224,7 +225,8 @@ def nysnodjupne_3d(df, ax1=None):
     max_df = maxdf(df)
     maksimal_sdfsw3ddato = df['sdfsw3d'].idxmax().date()
     maksimal_sdfsw3d = df['sdfsw3d'].max()
-
+    #Ekstra triks for å få datoer på 1.1 i årstall, for bedre plotting
+    max_df['dato'] = pd.date_range(start=str(max_df.index[0].year), end=str(max_df.index[-1].year), freq="AS")
     slope, y0, r, p, stderr = stats.linregress(
         max_df['sdfsw3d'].index.map(datetime.date.toordinal),
         max_df['sdfsw3d'])
@@ -238,7 +240,7 @@ def nysnodjupne_3d(df, ax1=None):
         ax1 = plt.gca()
 
     ax1.set_title('Maksimal nysnødybde 3 døgn')
-    ax1.bar(max_df.index, max_df['sdfsw3d'], width=320, snap=False, color='skyblue')
+    ax1.bar(max_df.dato, max_df['sdfsw3d'], width=320, snap=False, color='skyblue')
     ax1.set_xlabel('Årstall')
     ax1.set_ylabel('Nysnødybde 3 døgn (cm)')
     ax1.set_ylim(max_df['sdfsw3d'].min()*0.8, max_df['sdfsw3d'].max()*1.1)

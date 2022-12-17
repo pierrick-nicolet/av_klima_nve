@@ -8,8 +8,14 @@ import folium
 from streamlit_folium import st_folium
 import pandas as pd
 st.header('AV-Klima')
+
+#Setter liste med parametere brukt i analyse, tenkt å kunne utvides, eller gjere det mulig å velge på sikt
 parameterliste = ['rr', 'tm', 'sd', 'fsw', 'sdfsw', 'sdfsw3d']
+
+#For kartbruk må koordinater transformerer mellom lat/lon og UTM
 transformer = Transformer.from_crs(4326, 5973)
+
+#Setter opp kartobjekt, med midtpunkt og zoom nivå
 m = folium.Map(location=[62.14497, 9.404296], zoom_start=5)
 folium.raster_layers.WmsTileLayer(
     url='https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}',
@@ -22,16 +28,17 @@ folium.raster_layers.WmsTileLayer(
     control=True,
     
 ).add_to(m)
+
+#Litt knotete måte å hente ut koordinater fra Streamlit, kanskje bedre i nye versjoner av streamlit? Manglande javascriptskills..
 m.add_child(folium.ClickForMarker(popup="Waypoint"))
-#from folium.plugins import Draw
-#Draw().add_to(m)
 output = st_folium(m, width = 700, height=500)
+
 utm_lat = 0
 utm_lon = 0
 st.write('Trykk i kartet, eller skriv inn koordinater for å velge klimapunkt.')
 st.write('Finn automatisk nærmaste stadnavn dersom det er eit navn innafor 500m radius.')
 
-
+#Enkel måte å vente på klikk i kartet
 try:
     kart_kord_lat = output['last_clicked']['lat']
     kart_kord_lng = output['last_clicked']['lng']
@@ -43,21 +50,19 @@ except TypeError:
     utm_nord  = 'Trykk i kart, eller skriv inn koordinat'
     utm_ost = 'Trykk i kart, eller skriv inn koordinat'
 
-
+#Lat, lon begrep henger igjen etter gamle versjon av script, trenger opprydding
 lat = st.text_input("NORD(UTM 33)", utm_nord)
 lon = st.text_input("ØST  (UTM 33)", utm_ost)
 
-
+#Venter på klikk, og prøver å finne stedsnavn
 try:
     navn = klimadata.stedsnavn(utm_nord, utm_ost)['navn'][0]['stedsnavn'][0]['skrivemåte']
 except (IndexError, KeyError):
     navn = 'Skriv inn navn'
-#st.write(navn)
-#st.write(navn['navn'][0]['stedsnavn'][0]['skrivemåte'])
 
-#st.write(klimadata.stedsnavn(lng, lat))
 lokalitet = st.text_input("Gi navn til lokalitet", navn)
 
+#Hardkoda start og sluttdato, det
 startdato = '1958-01-01'
 #sluttdato = st.text_input('Gi sluttdato', '2019-12-31')
 sluttdato = '2021-12-31'

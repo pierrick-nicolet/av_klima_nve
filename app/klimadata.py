@@ -92,6 +92,7 @@ def klima_dataframe(lat, lon, startdato, sluttdato, parametere):
     )
     df[df > 1000] = 0
     df = rullande_3dogn_nedbor(df)
+    print(df.head())
     return df
 
 def maxdf(df):
