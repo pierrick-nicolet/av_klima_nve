@@ -26,9 +26,9 @@ import numpy as _np
 import matplotlib.pyplot as _plt
 import numdifftools as _ndt
 
-from utils_e import bootstrap_ci as _bsci
-from utils_e import gev_momfit as _gev_momfit
-from utils_e import gum_momfit as _gum_momfit
+from klimadata.utils_e import bootstrap_ci as _bsci
+from klimadata.utils_e import gev_momfit as _gev_momfit
+from klimadata.utils_e import gum_momfit as _gum_momfit
 
 class _Base:
     
