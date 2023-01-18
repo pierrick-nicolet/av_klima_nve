@@ -6,11 +6,30 @@ from matplotlib.ticker import MultipleLocator
 from matplotlib.dates import DateFormatter
 import datetime
 import numpy as np
-from klimadata.klimadata import *
+from klimadata.klimadata import maxdf, vind_regn, vind_sno_fsw
+from klimadata import extreme as e
+
+from windrose import WindroseAxes
 
 
-def plot_normaler(klima, ax1=None):
-    """Tar imot klimadataframe, og returnerer ax plotteobjekt fra matplotlib. Kan kombineres i samleplot, eller stå aleine"""
+def plot_normaler(klima: pd.DataFrame, ax1=None) -> plt.Axes:
+    """Tar imot klimadataframe, og returnerer ax plotteobjekt fra matplotlib. 
+    Funksjonen plotter normalverdier for nedbør og temperatur for perioden 1991-2020.
+    Kan kombineres i samleplot, eller stå aleine. 
+    Finnes ein søsterfunksjon som skriver ut tall på plottet. 
+
+    Parameters
+    ----------
+        klima
+            Klimadataframe fra klimadata.py
+        
+    Returns
+    ----------
+        ax1
+            Plotteobjekt fra matplotlib
+
+    
+    """
     statistikk_per_maaned = pd.DataFrame(
         {
             "rr": klima["rr"].loc["1991":"2020"].groupby(pd.Grouper(freq="M")).sum(),
@@ -65,9 +84,23 @@ def plot_normaler(klima, ax1=None):
     return ax1, ax2
 
 
-def normaler_annotert(klima, ax1=None):
-    """Tar imot klimadataframe, og returnerer ax plotteobjekt fra matplotlib. Kan kombineres i samleplot, eller stå aleine
-    Denne funksjonen returnerer plotteobjekt med notasjoner på grafer og søyler.
+def normaler_annotert(klima: pd.DataFrame, ax1=None) -> plt.Axes:
+    """Tar imot klimadataframe, og returnerer ax plotteobjekt fra matplotlib. 
+    Funksjonen plotter normalverdier for nedbør og temperatur for perioden 1991-2020.
+    Kan kombineres i samleplot, eller stå aleine. 
+    Finnes ein søsterfunksjon uten tall på plottet.
+    
+    Parameters
+    ----------
+        klima
+            Klimadataframe fra klimadata.py
+        
+    Returns
+    ----------
+        ax1
+            Plotteobjekt fra matplotlib
+
+    
     TODO: Kan samkøyrast med generell normalplot
     """
     statistikk_per_maaned = pd.DataFrame(
@@ -181,7 +214,7 @@ def normaler_annotert(klima, ax1=None):
     return ax1, ax2
 
 
-def plot_aarsnedbor(df, ax1=None):
+def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
     """Tar inn klimadataframe og returnerer plot for årsnedbør"""
     aarsnedbor = df["rr"].groupby(pd.Grouper(freq="Y")).sum()
     aarsgjennomsnitt_1961_1990 = int(aarsnedbor.loc["1961":"1990"].mean())
@@ -255,12 +288,12 @@ def plot_aarsnedbor(df, ax1=None):
     return ax1, ax2
 
 
-def snodjupne(df, ax1=None):
+def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
     sno = (
         df["sd"].groupby(pd.Grouper(freq="Y")).max()
     )  # Finner maksimal snødjupne per år
-    maxaar = sno.idxmax()
-    snomax = sno.max()
+    #maxaar = sno.idxmax()
+    #snomax = sno.max()
     snosnitt_6090 = sno.loc["1961":"1990"].mean()
     snosnitt_9020 = sno.loc["1991":"2020"].mean()
     sno_df = sno.to_frame()
@@ -357,7 +390,7 @@ def snodjupne(df, ax1=None):
     return ax1, ax2
 
 
-def nysnodjupne_3d(df, ax1=None):
+def nysnodjupne_3d(df: pd.DataFrame, ax1=None) -> plt.Axes:
     max_df = maxdf(df)
     maksimal_sdfsw3ddato = df["sdfsw3d"].idxmax().date()
     maksimal_sdfsw3d = df["sdfsw3d"].max()
@@ -386,6 +419,7 @@ def nysnodjupne_3d(df, ax1=None):
     ax1.set_ylabel("Nysnødybde 3 døgn (cm)")
     ax1.set_ylim(max_df["sdfsw3d"].min() * 0.8, max_df["sdfsw3d"].max() * 1.1)
 
+    #Legger til tekst med maksimaldato og -verdi
     ax1.text(
         max_df.index[0],
         df["sdfsw3d"].max(),
@@ -395,6 +429,7 @@ def nysnodjupne_3d(df, ax1=None):
         + str(maksimal_sdfsw3d)
         + " cm",
     )
+    #Legger til tekst med gjennomsnittlig nysnødybde 3 døgn
     ax1.text(
         max_df["sdfsw3d"].index[0],
         max_df["sdfsw3d"].min() * 0.9,
@@ -419,7 +454,7 @@ def nysnodjupne_3d(df, ax1=None):
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1961-1990",
+        label="Snitt 1961-2021",
     )
     ax2.hlines(
         y=max_df["sdfsw3d"].loc["1961":"1990"].mean(),
@@ -446,7 +481,7 @@ def nysnodjupne_3d(df, ax1=None):
     return ax1, ax2
 
 
-def snomengde(df, ax1=None):
+def snomengde(df: pd.DataFrame, ax1=None) -> plt.Axes:
     df = df.loc["1991":"2020"]
     snodager = (
         df["sd"]
@@ -485,7 +520,7 @@ def snomengde(df, ax1=None):
     return ax1, ax2
 
 
-def ekstremverdi_3d_sd(df, ax1=None):
+def ekstremverdi_3d_sd(df: pd.DataFrame, ax1=None) -> plt.Axes:
     data = df["sdfsw3d"]
     model = EVA(data=data)
     model.get_extremes(
@@ -529,7 +564,7 @@ def ekstremverdi_3d_sd(df, ax1=None):
     return fig
 
 
-def vind(vind_df):
+def vind(vind_df: pd.DataFrame) -> plt.Axes:
     vind_df["retning"] = vind_df["windDirection10m24h06"] * 45
     vind_regn_df = vind_regn(vind_df)
     vind_sno_df = vind_sno_fsw(vind_df)

@@ -1,18 +1,14 @@
-#Utvikla av Jan Helge Aalbu, Asplan Viak
 '''Enkel webapp for uthenting av klimaanalyser i samband med skredfarevurderinger
 Bruker streamlit pakken for å lage webapp fra python script
 '''
 
-
-from matplotlib import pyplot as plt
 import streamlit as st
-from pyproj import CRS
 from pyproj import Transformer
 from klimadata import klimadata
 from klimadata import plot
 import folium
 from streamlit_folium import st_folium
-import pandas as pd
+
 
 st.header("AV-Klima")
 
@@ -72,7 +68,8 @@ except (IndexError, KeyError):
 
 lokalitet = st.text_input("Gi navn til lokalitet", navn)
 
-# Hardkoda start og sluttdato, det
+# Hardkoda start og sluttdato, det er mulig å utvide dette til å la bruker velge, 
+# men funksjoner for plotting er ikke utvikla for å håndtere dette
 startdato = "1958-01-01"
 sluttdato = "2022-12-31"
 
@@ -81,7 +78,10 @@ plottype = st.radio(
     "Velg plottype", ("Klimaoversikt", "Klimaoversikt med 3 døgn snø og returverdi")
 )
 
+#Lar bruker velge om de vil ha annotert normalplot
 annotert = st.checkbox("Vis tall på normalplot")
+
+#Lar bruker velge om de vil ha vindanalyse
 vind = st.checkbox("Vindanalyse")
 
 #Enkel knapp for å vente med kjøre resten av scriptet før input er registert
@@ -137,7 +137,7 @@ if knapp:
             "Vinddata må brukast med forsiktigheit. Vinddata finnes kunn fra mars 2018 - mars 2022. Vinddata bør hentes fra høgaste punkt i området, og ikkje nede i fjord/dalstrøk."
         )
         st.write(
-            "Vær serleg obs på at det i områder er få dager med snø for å få fram snøførende vindretning."
+            "Vær særleg obs på at det i områder er få dager med snø for å få fram snøførende vindretning."
         )
 st.write(
     "Scriptet henter ned data frå NVE sitt Grid Time Series API, som er visualisert på xgeo.no"
