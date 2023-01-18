@@ -1,3 +1,15 @@
+from collections import OrderedDict
+from scipy import stats as _st
+from scipy import optimize as _op
+#from lmoments3 import distr as _lmdistr
+import numpy as _np
+import matplotlib.pyplot as _plt
+import numdifftools as _ndt
+
+from klimadata.utils_e import bootstrap_ci as _bsci
+from klimadata.utils_e import gev_momfit as _gev_momfit
+from klimadata.utils_e import gum_momfit as _gum_momfit
+
 '''
 Based on scikit-extremes libary by Kiko Correoso
 https://github.com/kikocorreoso/scikit-extremes
@@ -17,18 +29,6 @@ Generalised Pareto Distribution (GPD):
     To be used applying the Peak-Over-Threshold approach
     TODO
 """
-
-from collections import OrderedDict
-from scipy import stats as _st
-from scipy import optimize as _op
-#from lmoments3 import distr as _lmdistr
-import numpy as _np
-import matplotlib.pyplot as _plt
-import numdifftools as _ndt
-
-from klimadata.utils_e import bootstrap_ci as _bsci
-from klimadata.utils_e import gev_momfit as _gev_momfit
-from klimadata.utils_e import gum_momfit as _gum_momfit
 
 class _Base:
     
