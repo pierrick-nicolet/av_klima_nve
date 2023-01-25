@@ -15,6 +15,8 @@ from windrose import WindroseAxes
 def plot_normaler(klima: pd.DataFrame, ax1=None) -> plt.Axes:
     """Tar imot klimadataframe, og returnerer ax plotteobjekt fra matplotlib. 
     Funksjonen plotter normalverdier for nedbør og temperatur for perioden 1991-2020.
+
+
     Kan kombineres i samleplot, eller stå aleine. 
     Finnes ein søsterfunksjon som skriver ut tall på plottet. 
 
@@ -215,7 +217,25 @@ def normaler_annotert(klima: pd.DataFrame, ax1=None) -> plt.Axes:
 
 
 def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
-    """Tar inn klimadataframe og returnerer plot for årsnedbør"""
+    '''Tar inn klimadataframe og returnerer plot for snødjupne
+    Plottet bruker parameteren rr - Døgnnedbør v2.0 - mm frå NVE api
+    Denne returnerer døgnnedbør i mm
+    Se https://senorge.no/Models for mer informasjon om måten data er generert
+
+    Plottet tar ut snittverdier for normalperiode 1961-1990 og 1991-2020 samt for heile perioden.
+    Det blir også rekna ut ein trend for heile datasettet.
+    
+    Parameters
+    ----------
+        df
+            pandas dataframe med klimadata
+
+    Returns
+    -------
+        ax1
+            Matplotlib axes objekt med døgnnedbør plot
+    
+    '''
     aarsnedbor = df["rr"].groupby(pd.Grouper(freq="Y")).sum()
     aarsgjennomsnitt_1961_1990 = int(aarsnedbor.loc["1961":"1990"].mean())
     aarsgjennomsnitt_1990_2020 = int(aarsnedbor.loc["1991":"2020"].mean())
@@ -249,7 +269,7 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax1.text(
         aarsnedbor.index[0],
         aarsnedbor.max(),
-        "Gjennomsnittlig aarsnedbor(1991-2020):  "
+        "Gjennomsnittlig årsnedbor(1991-2020):  "
         + str(int(aarsgjennomsnitt_1990_2020))
         + " mm",
     )
@@ -260,8 +280,17 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
         [y_endpoints[0][0], y_endpoints[0][1]],
         linestyle="dashed",
         linewidth=1,
-        color="r",
+        color="b",
         label="Trend",
+    )
+    ax2.hlines(
+        y=aarsnedbor.mean(),
+        xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2022-12-31", "%Y-%m-%d"),
+        linestyle="dashed",
+        linewidth=1,
+        color="y",
+        label="Snitt 1958-2022",
     )
     ax2.hlines(
         y=aarsgjennomsnitt_1961_1990,
@@ -289,6 +318,27 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
 
 
 def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
+    '''Tar inn klimadataframe og returnerer plot for snødjupne
+    
+    Plottet bruker parameteren sd - Snødybde v2.0.1 frå NVE api.
+    Denne returnerer snødybde i cm.
+
+    Se https://senorge.no/Models for meir informasjon om måten data er generert
+
+    Plottet tar ut snittverdier for normalperiode 1961-1990 og 1991-2020 samt for heile perioden.
+    Det blir også rekna ut ein trend for heile datasettet.
+    
+    Parameters
+    ----------
+        df
+            pandas dataframe med klimadata
+
+    Returns
+    -------
+        ax1
+            Matplotlib axes objekt med snødjupne plot
+    
+    '''
     sno = (
         df["sd"].groupby(pd.Grouper(freq="Y")).max()
     )  # Finner maksimal snødjupne per år
@@ -345,11 +395,11 @@ def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax2.hlines(
         y=sno.mean(),
         xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
-        xmax=datetime.datetime.strptime("2020-12-31", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2022-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1961-1990",
+        label="Snitt 1958-2022",
     )
     ax2.hlines(
         y=snosnitt_6090,
@@ -391,6 +441,28 @@ def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
 
 
 def nysnodjupne_3d(df: pd.DataFrame, ax1=None) -> plt.Axes:
+    '''Tar inn klimadataframe og returnerer plot for 3 døgns nysnødjupne
+
+    Plottet bruker parameteren sdfsw3d - Nynsødybde 3 døgn frå NVE api
+
+    Se https://senorge.no/Models for mer informasjon om måten data er generert
+    Det anbefales å sette seg inn i måten datasettet regner om frå mm vann til cm snø.
+
+    Plottet tar ut snittverdier for normalperiode 1961-1990 og 1991-2020 samt for heile perioden.
+    Det blir også rekna ut ein trend for heile datasettet.
+    
+    Parameters
+    ----------
+        df
+            pandas dataframe med klimadata
+
+    Returns
+    -------
+        ax1
+            Matplotlib axes objekt med snødjupne plot
+    
+    '''
+
     max_df = maxdf(df)
     maksimal_sdfsw3ddato = df["sdfsw3d"].idxmax().date()
     maksimal_sdfsw3d = df["sdfsw3d"].max()
@@ -450,11 +522,11 @@ def nysnodjupne_3d(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax2.hlines(
         y=max_df["sdfsw3d"].mean(),
         xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
-        xmax=datetime.datetime.strptime("2020-12-31", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2022-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1961-2021",
+        label="Snitt 1958-2022",
     )
     ax2.hlines(
         y=max_df["sdfsw3d"].loc["1961":"1990"].mean(),
@@ -482,6 +554,26 @@ def nysnodjupne_3d(df: pd.DataFrame, ax1=None) -> plt.Axes:
 
 
 def snomengde(df: pd.DataFrame, ax1=None) -> plt.Axes:
+    '''Funksjon for å plotte snomengde i løpet av året for normalperiode 1991-2020
+    
+    Funksjonen filtrerer ut data for normalperiode 1991-2020.
+    Deretter beregnes snitt, max og min verdier for kvar dag i året, og legges til i en ny dataframe.
+
+    Parameters
+    ----------
+        df
+            Klimadataframe
+        ax1
+            Plott-objekt
+    
+    Returns
+    -------
+        ax1
+            Plott-objekt med snødager
+        ax2
+            Plott-objekt med temperatur
+
+    '''
     df = df.loc["1991":"2020"]
     snodager = (
         df["sd"]
@@ -565,6 +657,28 @@ def ekstremverdi_3d_sd(df: pd.DataFrame, ax1=None) -> plt.Axes:
 
 
 def vind(vind_df: pd.DataFrame) -> plt.Axes:
+    '''Funksjon for å plotte vind mot nedbør og snø
+
+    Plottet lager 3 subplots:
+        1. Vindrose for vindretning uansett nedbør eller ikkje, delt inn i vindstyrker
+        2. Vindrose for vindretning med regn, delt inn i mm regn 
+        3. Vindrose for vindretning med nynsø siste døgn (fsw), delt inn i cm snø
+
+    Ved tolking av vindrose må ein både sjå på % antall dager, men også på kva mengde som kjem ved kvar vindretning
+    det kan f.eks være flest dager frå vest, men dagene med virkelig snøfall kan komme fra andre retninger
+
+    Parameters
+    ----------
+        vind_df
+            Dataframe med vinddata fra mars 2018 til mars 2022
+        
+    Returns
+    -------
+        fig
+            Plott-objekt med 3 subplot
+    
+
+    '''
     vind_df["retning"] = vind_df["windDirection10m24h06"] * 45
     vind_regn_df = vind_regn(vind_df)
     vind_sno_df = vind_sno_fsw(vind_df)
@@ -577,17 +691,17 @@ def vind(vind_df: pd.DataFrame) -> plt.Axes:
     # ax1.legend(title='Vindstyrke (m/s')
     ax1.set_legend(title="Vindstyrke (m/s)")
 
-    ax2.bar(vind_regn_df["retning"], vind_regn_df["rr"], normed=True, opening=1.8)
+    ax2.bar(vind_regn_df["retning"], vind_regn_df["rrl"], normed=True, opening=1.8)
     ax2.set_title(
         f"%-vis med dager vindretning og regn ({len(vind_regn_df['retning'])} dager)"
     )
     ax2.set_legend(title="Regn (rrl) (mm)")
 
-    ax3.bar(vind_sno_df["retning"], vind_sno_df["rr"], normed=True, opening=1.8)
+    ax3.bar(vind_sno_df["retning"], vind_sno_df["fsw"], normed=True, opening=1.8)
     ax3.set_title(
         f"%-vis med dager vindretning og snø ({len(vind_sno_df['retning'])} dager)"
     )
-    ax3.set_legend(title="Snø (fsw) (mm)")
+    ax3.set_legend(title="Snø (fsw) (cm)")
 
     return fig
 
@@ -640,14 +754,14 @@ def klima_sno_oversikt(df, lokalitet, annotert):
     ax8, ax9 = nysnodjupne_3d(df)
 
     ax10 = fig.add_subplot(326)
-    ax10 = gammel_plot_ekstremverdier_3dsno(df)
+    ax10 = plot_ekstremverdier_3dsno(df)
 
     fig.suptitle(f"Klimaoversikt for {lokalitet}", fontsize=30, y=0.9, va="bottom")
 
     return fig
 
 
-def gammel_plot_ekstremverdier_3dsno(df, ax1=None):
+def plot_ekstremverdier_3dsno(df, ax1=None):
     maximal = maxdf(df)
     liste = maximal["sdfsw3d"].tolist()
     array = np.array(liste)

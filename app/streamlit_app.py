@@ -91,7 +91,7 @@ if knapp:
     lon = int(float(lon.strip()))
     lat = int(float(lat.strip()))
     df = klimadata.klima_dataframe(lon, lat, startdato, sluttdato, parameterliste)
-
+    st.write(f'Modellhøgden frå punktet er {klimadata.hent_hogde(lon, lat)} moh. Denne kan avvike fra faktisk terrenghøgde.')
     if plottype == "Klimaoversikt":
         st.write("Trykk på pil oppe i høgre hjørne for å utvide plot")
         st.pyplot(plot.klimaoversikt(df, lokalitet, annotert))

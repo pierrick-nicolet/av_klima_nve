@@ -3,22 +3,46 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to AV-Klima's documentation!
+Dokumentasjon av AV-Klima tjenesten
 ====================================
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+Skildring av tjenesten
+----------------------
+Tjenesten er ein web applikasjon for å forenkle uthenting av klimadata. Den nyttar
+seg av eit gridda datasett, dvs eit datasett der det finnes data for kvar 1x1 km rute
+av landet.
+
+Fra NVE sin skredfareveileder (https://veileder-skredfareutredning-bratt-terreng.nve.no/)
+er det åpna for at gridda data kan vere aktuelle å bruke, særleg der det er langt fra stajonsdata.
+Ofte mangler nærliggande stasjonar også f.eks vind, snømengde eller andre aktuelle parametere.
+
+Tjenesten gjer ein spørring til eit NVE API for å hente ut data for ein gitt koordinat. Den 
+lager så automatisk til plot med data som er aktuelle i ei skredfarevurdering. Eller andre 
+klimanalaysar.
+
+Lenke til NVE api:
+http://api.nve.no/doc/gridtimeseries-data-gts/
+
+Lenke til forklaring for generering av datasett:
+https://senorge.no/Models
+Der er det vidare henvisning til vitenskaplige artiklar som skildrar metodane i detalj
+
+
+Bruksanvisning
+--------------
+
+
+
+Nedhenting og bearbeiding av klimadata modul
+--------------------------------------------
 .. automodule:: klimadata.klimadata
     :members:
 
+Modul for plotting av klimadata
+-------------------------------
 .. automodule:: klimadata.plot
     :members:
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

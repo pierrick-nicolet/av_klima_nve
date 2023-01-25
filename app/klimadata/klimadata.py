@@ -153,9 +153,41 @@ def klima_dataframe(lat, lon, startdato, sluttdato, parametere) -> pd.DataFrame:
     df = rullande_3dogn_nedbor(df)
     return df
 
+@st.cache
+def hent_hogde(lon: str, lat: str) -> str:
+    """Henter ned høgdeverdi for koordinat fra NVE api
+
+    Parameters
+    ----------
+        lat
+            øst-vest koordinat (i UTM33)
+        lon
+            nord-sør koordinat (i UTM33)
+
+    Returns
+    ----------
+        høgde
+            høgdeverdi for koordinat
+
+    """
+
+    return str(nve_api(lon, lat, '01-01-2022', '01-01-2022', 'rr') ['Altitude'])
+
+ 
 
 def maxdf(df: pd.DataFrame) -> pd.DataFrame:
-    """Tar in klimadataframe, og returnerer ny dataframe med årlige maksimalverdier"""
+    """Tar in klimadataframe, og returnerer ny dataframe med årlige maksimalverdier
+    
+    Parameters
+    ----------
+        df
+            Pandas dataframe med klimadata
+        
+    Returns
+    ----------
+        maxdf
+            Pandas dataframe med årlige maksimalverdier
+    """
     maxdf = pd.DataFrame(df["sdfsw3d"].groupby(pd.Grouper(freq="Y")).max()).assign(
         rr=df["rr"].groupby(pd.Grouper(freq="Y")).max(),
         rr3=df["rr3"].groupby(pd.Grouper(freq="Y")).max(),
@@ -165,33 +197,109 @@ def maxdf(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def vind_nedbor(df: pd.DataFrame) -> pd.DataFrame:
-    """Tar in vinddataframe, og returnerer ny dataframe med der nedbør under 0.2mm blir fjerna"""
+    """Tar in vinddataframe, og returnerer ny dataframe med der nedbør (rr) under 0.2mm blir fjerna
+    
+    Parameters
+    ----------
+        df
+            Pandas dataframe med klimadata
+
+    Returns
+    ----------
+        df
+            Pandas dataframe der dager med nedbør (rr) under 0.2mm blir fjerna
+    
+    """
     return df.where(df.rr > 0.2).dropna()
 
 
 def vind_regn(df: pd.DataFrame) -> pd.DataFrame:
-    """Tar in vinddataframe, og returnerer ny dataframe med der regn under 0.2mm blir fjerna"""
+    """Tar in vinddataframe, og returnerer ny dataframe med der regn (rrl) under 0.2mm blir fjerna
+    
+    Bruker rrl istedenfor rr, da rr er nedbør, mens rrl er regn fra NVE Grid Times Series API
+
+    Parameters
+    ----------
+        df
+            Pandas dataframe med klimadata
+
+    Returns
+    ----------
+        df
+            Pandas dataframe der dager med regn (rrl) under 0.2mm blir fjerna
+    
+    """
     return df.where(df.rrl > 0.2).dropna()
 
 
 def vind_sno_fsw(df: pd.DataFrame) -> pd.DataFrame:
-    """Tar in vinddataframe, og returnerer ny dataframe med der nysnø under 0.2mm blir fjerna"""
-    return df.where(df.fsw > 0.2).dropna()
+    """Tar in vinddataframe, og returnerer ny dataframe med der nysnø under 0.2mm blir fjerna
+    
+    Parameters
+    ----------
+        df
+            Pandas dataframe med klimadata
+        
+    Returns
+    ----------
+        df
+            Pandas dataframe der dager med nysnø under 0.2mm blir fjerna
+    """
+    filter1 = df["fsw"] > 0.2 #Fjerner dager med nysnø under 0.2 cm (lite relevante)
+    filter2 = df["fsw"] < 200 #Håndterer feil i data
+    return df.where(filter1 & filter2).dropna()
 
 
 def vind_sno_rr_tm(df: pd.DataFrame) -> pd.DataFrame:
-    """Tar in vinddataframe, og returnerer ny dataframe med der nedbør under 0.2mm og temperatur blir fjerna"""
+    """Tar in vinddataframe, og returnerer ny dataframe med der nedbør under 0.2mm og temperatur under 1 grad blir fjerna
+    
+    Parameters
+    ----------
+        df
+            Pandas dataframe med klimadata
+        
+    Returns
+    ----------
+        df
+            Pandas dataframe der dager med nedbør under 0.2mm og temperatur blir fjerna
+
+    """
     return df.where(df.rr > 0.2).dropna().where(df.tm < 1).dropna()
 
 
 def rullande_3dogn_nedbor(dataframe: pd.DataFrame) -> pd.DataFrame:
-    """Tar in klimadataframe og returnerer med ny kollonne med utrekna 3 døgs nedbør basert på døgnnedbør"""
+    """Tar in klimadataframe og returnerer med ny kollonne med utrekna 3 døgs nedbør basert på døgnnedbør
+    
+    Parameters
+    ----------
+        dataframe
+            Pandas dataframe med klimadata
+        
+    Returns
+    ----------
+        df
+            Pandas dataframe med ny kollonne med utrekna 3 døgs nedbør basert på døgnnedbør
+    
+    """
     df = dataframe.assign(rr3=dataframe["rr"].rolling(3).sum().round(2)).fillna(0)
     return df
 
 
-def gammel_plot_ekstremverdier_3dsno(df: pd.DataFrame, ax1=None):
-    """Gammel funksjon for å jobbe med eldre tilpassing av ekstremverdiutrekning"""
+def plot_ekstremverdier_3dsno(df: pd.DataFrame, ax1=None):
+    """Gammel funksjon for å jobbe med eldre tilpassing av ekstremverdiutrekning
+    
+    Parameters
+    ----------
+        df
+            Pandas dataframe med klimadata
+        ax1
+            Matplotlib axis
+    
+    Returns
+    ----------
+        model
+            Ekstremverdiutrekning basert på Gumbel distribusjon
+    """
     maximal = maxdf(df)
     liste = maximal["sdfsw3d"].tolist()
     array = np.array(liste)
