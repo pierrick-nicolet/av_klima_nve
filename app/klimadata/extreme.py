@@ -282,9 +282,9 @@ class _Base:
         Return values and return periods plot. 
         """
         verdier_returpara = {
-            '3ds':['Ekstremverdier 3 døgn snø (Gumbel)', 'Returperiode (år)','Snømengde (cm)'],
-            '1drr':['Ekstremverdier 1 døgn nedbør (Gumbel)', 'Returperiode (år)','Nedbør (mm)'],
-            'sd':['Ekstremverdier maks snøhøgde (Gumbel)', 'Returperiode (år)','Snøhøgde (cm)']
+            '3ds':['Ekstremverdiar 3 døgn snø (Gumbel)', 'Returperiode (år)','Snømengde (cm)'],
+            '1drr':['Ekstremverdiar 1 døgn nedbør (Gumbel)', 'Returperiode (år)','Nedbør (mm)'],
+            'sd':['Ekstremverdiar maks snøhøgde (Gumbel)', 'Returperiode (år)','Snøhøgde (cm)']
         }
 
         #fig, ax = _plt.subplots(figsize=(8, 6))

@@ -12,9 +12,9 @@ def nve_api(x: str, y: str, startdato: str, sluttdato: str, para: str) -> list:
 
     Parameters
     ----------
-        lon 
+        x 
             øst koordinat (i UTM33)
-        lat  
+        y  
             nord koordinat (i UTM33)
         startdato
             startdato for dataserien som hentes ned
@@ -59,9 +59,9 @@ def stedsnavn(x: str, y: str) -> list:
     Parameters
     ----------
         x
-            nord koordinat i UTM33
-        y
             øst koordinat i UTM33
+        y
+            nord koordinat i UTM33
 
     Returns
     ----------
@@ -69,7 +69,7 @@ def stedsnavn(x: str, y: str) -> list:
             Liste med stedsnavn innanfor radius på 500m
 
     """
-    url = f"https://ws.geonorge.no/stedsnavn/v1/punkt?nord={x}&ost={y}&koordsys=5973&radius=500&utkoordsys=4258&treffPerSide=1&side=1"
+    url = f"https://ws.geonorge.no/stedsnavn/v1/punkt?nord={y}&ost={x}&koordsys=5973&radius=500&utkoordsys=4258&treffPerSide=1&side=1"
     r = requests.get(url)
     verdier = r.json()
     # for verdi in
@@ -114,9 +114,9 @@ def klima_dataframe(x, y, startdato, sluttdato, parametere) -> pd.DataFrame:
 
     Parameters
     ----------
-        lon
+        x
             øst-vest koordinat (i UTM33)
-        lat
+        y
             nord-sør koordinat (i UTM33)
         startdato
             startdato for dataserien som hentes ned

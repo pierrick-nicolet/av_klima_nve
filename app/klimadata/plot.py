@@ -8,6 +8,7 @@ import datetime
 import numpy as np
 from klimadata.klimadata import maxdf, vind_regn, vind_sno_fsw
 from klimadata import extreme as e
+from pyextremes import EVA
 
 from windrose import WindroseAxes
 
@@ -53,14 +54,14 @@ def plot_normaler(klima: pd.DataFrame, ax1=None) -> plt.Axes:
     if ax1 is None:
         ax1 = plt.gca()
 
-    ax1.set_title("Gjennomsnittlig månedsnedbør og temperatur (1991 - 2020)")
+    ax1.set_title("Gjennomsnittlig månadsnedbør og temperatur (1991 - 2020)")
     ax1.bar(
         maanedlig_gjennomsnitt.index,
         maanedlig_gjennomsnitt["rr"],
         width=0.5,
         snap=False,
     )
-    ax1.set_xlabel("Måned")
+    ax1.set_xlabel("Månad")
     ax1.set_ylabel("Nedbør (mm)")
     ax1.set_ylim(0, maanedlig_gjennomsnitt["rr"].max() * 1.15)
 
@@ -132,14 +133,14 @@ def normaler_annotert(klima: pd.DataFrame, ax1=None) -> plt.Axes:
     if ax1 is None:
         ax1 = plt.gca()
 
-    ax1.set_title("Gjennomsnittlig månedsnedbør og temperatur (1991 - 2020)")
+    ax1.set_title("Gjennomsnittlig månadsnedbør og temperatur (1991 - 2020)")
     ax1.bar(
         maanedlig_gjennomsnitt.index,
         maanedlig_gjennomsnitt["rr"],
         width=0.5,
         snap=False,
     )
-    ax1.set_xlabel("Måned")
+    ax1.set_xlabel("Månad")
     ax1.set_ylabel("Nedbør (mm)")
     ax1.set_ylim(0, maanedlig_gjennomsnitt["rr"].max() * 1.15)
 
@@ -266,12 +267,25 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax1.set_xlabel("Årstall")
     ax1.set_ylabel("Nedbør (mm)")
     ax1.set_ylim(aarsnedbor.min() * 0.6, aarsnedbor.max() * 1.1)
+    ax1.annotate(
+        "Maks årsnedbør: "
+        + str(aarsnedbor_df["rr"].idxmax().date())[0:4]
+        + " | "
+        + str(round(aarsnedbor_df["rr"].max()))
+        + "mm",
+        xy=(aarsnedbor_df["rr"].idxmax().date(), aarsnedbor_df["rr"].max()),
+        xycoords="data",
+        xytext=(0.05, 0.9),
+        textcoords="axes fraction",
+        arrowprops=dict(arrowstyle="->"),
+    )
     ax1.text(
-        aarsnedbor.index[0],
-        aarsnedbor.max(),
+        0.05,
+        0.95,
         "Gjennomsnittlig årsnedbor(1991-2020):  "
         + str(int(aarsgjennomsnitt_1990_2020))
         + " mm",
+        transform=ax1.transAxes
     )
 
     ax2 = ax1.twinx()
@@ -365,10 +379,10 @@ def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
     if ax1 is None:
         ax1 = plt.gca()
 
-    ax1.set_title("Maksimal snødjupe")
+    ax1.set_title("Maksimal snødjupne")
     ax1.bar(sno_df.dato, sno_df["sd"], width=320, snap=False, color="powderblue")
     ax1.set_xlabel("Årstall")
-    ax1.set_ylabel("Snødjupne (cm)")
+    ax1.set_ylabel("Snødjupn (cm)")
     ax1.set_ylim(sno.min() * 0.6, sno.max() * 1.1)
     ax1.annotate(
         "Maks snøhøgde: "
@@ -424,14 +438,14 @@ def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax1.text(
         sno.index[0],
         sno.min() * 0.7,
-        "Gjennomsnittlig maksimal snødjupne (1991-2020):  "
+        "Gjennomsnittleg maksimal snødjupne (1991-2020):  "
         + str(int(snosnitt_9020))
         + " cm",
     )
     ax1.text(
         sno.index[0],
         sno.min() * 0.7,
-        "Gjennomsnittlig maksimal snødjupne (1991-2020):  "
+        "Gjennomsnittleg maksimal snødjupne (1991-2020):  "
         + str(int(snosnitt_9020))
         + " cm",
     )
@@ -485,10 +499,10 @@ def nysnodjupne_3d(df: pd.DataFrame, ax1=None) -> plt.Axes:
     if ax1 is None:
         ax1 = plt.gca()
 
-    ax1.set_title("Maksimal nysnødybde 3 døgn")
+    ax1.set_title("Maksimal nysnødjupne 3 døgn")
     ax1.bar(max_df.dato, max_df["sdfsw3d"], width=320, snap=False, color="skyblue")
     ax1.set_xlabel("Årstall")
-    ax1.set_ylabel("Nysnødybde 3 døgn (cm)")
+    ax1.set_ylabel("Nysnødjupne 3 døgn (cm)")
     ax1.set_ylim(max_df["sdfsw3d"].min() * 0.8, max_df["sdfsw3d"].max() * 1.1)
 
     #Legger til tekst med maksimaldato og -verdi
@@ -505,7 +519,7 @@ def nysnodjupne_3d(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax1.text(
         max_df["sdfsw3d"].index[0],
         max_df["sdfsw3d"].min() * 0.9,
-        "Snitt nysnødybde 3 døgn (1991-2020):  "
+        "Snitt nysnødjupne 3 døgn (1991-2020):  "
         + str(int(max_df["sdfsw3d"].mean()))
         + " cm",
     )
@@ -557,6 +571,7 @@ def snomengde(df: pd.DataFrame, ax1=None) -> plt.Axes:
     '''Funksjon for å plotte snomengde i løpet av året for normalperiode 1991-2020
     
     Funksjonen filtrerer ut data for normalperiode 1991-2020.
+    Funksjonen glatter ut plottet ved å bruke 7-dagers glidende snitt.
     Deretter beregnes snitt, max og min verdier for kvar dag i året, og legges til i en ny dataframe.
 
     Parameters
@@ -612,6 +627,171 @@ def snomengde(df: pd.DataFrame, ax1=None) -> plt.Axes:
     return ax1, ax2
 
 
+def vind(vind_df: pd.DataFrame) -> plt.Axes:
+    '''Funksjon for å plotte vind mot nedbør og snø
+
+    Plottet lager 3 subplots:
+        1. Vindrose for vindretning uansett nedbør eller ikkje, delt inn i vindstyrker
+        2. Vindrose for vindretning med regn, delt inn i mm regn 
+        3. Vindrose for vindretning med nynsø siste døgn (fsw), delt inn i cm snø
+
+    Ved tolking av vindrose må ein både sjå på % antall dager, men også på kva mengde som kjem ved kvar vindretning
+    det kan f.eks være flest dager frå vest, men dagene med virkelig snøfall kan komme fra andre retninger
+
+    Parameters
+    ----------
+        vind_df
+            Dataframe med vinddata fra mars 2018 til mars 2022
+        
+    Returns
+    -------
+        fig
+            Plott-objekt med 3 subplot
+    
+
+    '''
+    vind_df["retning"] = vind_df["windDirection10m24h06"] * 45
+    vind_regn_df = vind_regn(vind_df)
+    vind_sno_df = vind_sno_fsw(vind_df)
+    fig, (ax1, ax2, ax3) = plt.subplots(
+        1, 3, subplot_kw=dict(projection="windrose"), figsize=(20, 20)
+    )
+
+    ax1.bar(vind_df["retning"], vind_df["windSpeed10m24h06"], normed=True, opening=1.8)
+    ax1.set_title(f"%-vis med dagar vindretning ({len(vind_df['retning'])} dager)")
+    # ax1.legend(title='Vindstyrke (m/s')
+    ax1.set_legend(title="Vindstyrke (m/s)")
+
+    ax2.bar(vind_regn_df["retning"], vind_regn_df["rrl"], normed=True, opening=1.8)
+    ax2.set_title(
+        f"%-vis med dagar vindretning og regn ({len(vind_regn_df['retning'])} dager)"
+    )
+    ax2.set_legend(title="Regn (rrl) (mm)")
+
+    ax3.bar(vind_sno_df["retning"], vind_sno_df["fsw"], normed=True, opening=1.8)
+    ax3.set_title(
+        f"%-vis med dagar vindretning og snø ({len(vind_sno_df['retning'])} dager)"
+    )
+    ax3.set_legend(title="Snø (fsw) (cm)")
+
+    return fig
+
+
+def klimaoversikt(df: pd.DataFrame, lokalitet: str, annotert: bool, hoyde: str) -> plt.Figure:
+    '''Funksjonen lager sampleplot
+    
+    Parameters
+    ----------
+        df
+            Dataframe med klimadata
+        
+        lokalitet
+            Navn på klimapunktet
+        
+        annotert
+            Boolsk verdi som avgjør om det skal lages annotert plot eller ikkje
+        
+        Returns
+        -------
+            fig
+                Plott-objekt med 4 subplot
+        '''
+    fig = plt.figure(figsize=(20, 12))
+
+    ax1 = fig.add_subplot(221)
+
+    if annotert:
+        ax1, ax2 = normaler_annotert(df)
+    else:
+        ax1, ax2 = plot_normaler(df)
+
+    ax3 = fig.add_subplot(222)
+
+    ax3, ax4 = snomengde(df)
+    ax5 = fig.add_subplot(223)
+
+    ax5 = plot_aarsnedbor(df)
+    ax6 = fig.add_subplot(224)
+
+    ax6, ax7 = snodjupne(df)
+
+    fig.suptitle(f"Klimaoversikt for {lokalitet} ({hoyde} moh.)", fontsize=30, y=0.92, va="bottom")
+
+    return fig
+
+
+def klima_sno_oversikt(df, lokalitet, annotert, hoyde):
+    '''Funksjonen lager sampleplot
+
+    Parameters
+    ----------
+        df
+            Dataframe med klimadata
+
+        lokalitet
+            Navn på klimapunktet
+
+        annotert
+            Boolsk verdi som avgjør om det skal lages annotert plot eller ikkje
+
+    Returns
+     -------
+        fig
+            Plott-objekt med 6 subplot
+    '''
+    fig = plt.figure(figsize=(20, 18))
+
+    ax1 = fig.add_subplot(321)
+
+    if annotert:
+        ax1, ax2 = normaler_annotert(df)
+    else:
+        ax1, ax2 = plot_normaler(df)
+
+    ax3 = fig.add_subplot(322)
+    ax3, ax4 = snomengde(df)
+
+    ax5 = fig.add_subplot(323)
+    ax5 = plot_aarsnedbor(df)
+
+    ax6 = fig.add_subplot(324)
+    ax6, ax7 = snodjupne(df)
+
+    ax8 = fig.add_subplot(325)
+    ax8, ax9 = nysnodjupne_3d(df)
+
+    ax10 = fig.add_subplot(326)
+    #ax10 = ekstremverdi_3d_sd(df)
+    ax10 = plot_ekstremverdier_3dsno(df)
+
+    fig.suptitle(f"Klimaoversikt for {lokalitet} ({hoyde} moh.)", fontsize=30, y=0.92, va="bottom")
+
+    return fig
+
+
+def plot_ekstremverdier_3dsno(df, ax1=None):
+    maximal = maxdf(df)
+    liste = maximal["sdfsw3d"].tolist()
+    array = np.array(liste)
+    model = e.Gumbel(array, fit_method="mle", ci=0.05, ci_method="delta")
+
+    if ax1 is None:
+        ax1 = plt.gca()
+
+    return model.plot_return_values("3ds")
+
+
+def ekstrem_3d_sno_oversikt(df):
+    fig = plt.figure(figsize=(20, 8))
+
+    ax1 = fig.add_subplot(121)
+    ax1, ax2 = nysnodjupne_3d(df)
+
+    ax3 = fig.add_subplot(122)
+    ax3 = plot_ekstremverdier_3dsno(df)
+
+    return fig
+
 def ekstremverdi_3d_sd(df: pd.DataFrame, ax1=None) -> plt.Axes:
     data = df["sdfsw3d"]
     model = EVA(data=data)
@@ -652,134 +832,5 @@ def ekstremverdi_3d_sd(df: pd.DataFrame, ax1=None) -> plt.Axes:
         + str(round(summary["return value"].loc[5000.0]))
         + " cm \n",
     )
-
-    return fig
-
-
-def vind(vind_df: pd.DataFrame) -> plt.Axes:
-    '''Funksjon for å plotte vind mot nedbør og snø
-
-    Plottet lager 3 subplots:
-        1. Vindrose for vindretning uansett nedbør eller ikkje, delt inn i vindstyrker
-        2. Vindrose for vindretning med regn, delt inn i mm regn 
-        3. Vindrose for vindretning med nynsø siste døgn (fsw), delt inn i cm snø
-
-    Ved tolking av vindrose må ein både sjå på % antall dager, men også på kva mengde som kjem ved kvar vindretning
-    det kan f.eks være flest dager frå vest, men dagene med virkelig snøfall kan komme fra andre retninger
-
-    Parameters
-    ----------
-        vind_df
-            Dataframe med vinddata fra mars 2018 til mars 2022
-        
-    Returns
-    -------
-        fig
-            Plott-objekt med 3 subplot
-    
-
-    '''
-    vind_df["retning"] = vind_df["windDirection10m24h06"] * 45
-    vind_regn_df = vind_regn(vind_df)
-    vind_sno_df = vind_sno_fsw(vind_df)
-    fig, (ax1, ax2, ax3) = plt.subplots(
-        1, 3, subplot_kw=dict(projection="windrose"), figsize=(20, 20)
-    )
-
-    ax1.bar(vind_df["retning"], vind_df["windSpeed10m24h06"], normed=True, opening=1.8)
-    ax1.set_title(f"%-vis med dager vindretning ({len(vind_df['retning'])} dager)")
-    # ax1.legend(title='Vindstyrke (m/s')
-    ax1.set_legend(title="Vindstyrke (m/s)")
-
-    ax2.bar(vind_regn_df["retning"], vind_regn_df["rrl"], normed=True, opening=1.8)
-    ax2.set_title(
-        f"%-vis med dager vindretning og regn ({len(vind_regn_df['retning'])} dager)"
-    )
-    ax2.set_legend(title="Regn (rrl) (mm)")
-
-    ax3.bar(vind_sno_df["retning"], vind_sno_df["fsw"], normed=True, opening=1.8)
-    ax3.set_title(
-        f"%-vis med dager vindretning og snø ({len(vind_sno_df['retning'])} dager)"
-    )
-    ax3.set_legend(title="Snø (fsw) (cm)")
-
-    return fig
-
-
-def klimaoversikt(df, lokalitet, annotert):
-    fig = plt.figure(figsize=(20, 12))
-
-    ax1 = fig.add_subplot(221)
-
-    if annotert:
-        ax1, ax2 = normaler_annotert(df)
-    else:
-        ax1, ax2 = plot_normaler(df)
-
-    ax3 = fig.add_subplot(222)
-
-    ax3, ax4 = snomengde(df)
-    ax5 = fig.add_subplot(223)
-
-    ax5 = plot_aarsnedbor(df)
-    ax6 = fig.add_subplot(224)
-
-    ax6, ax7 = snodjupne(df)
-
-    fig.suptitle(f"Klimaoversikt for {lokalitet}", fontsize=30, y=0.9, va="bottom")
-
-    return fig
-
-
-def klima_sno_oversikt(df, lokalitet, annotert):
-    fig = plt.figure(figsize=(20, 18))
-
-    ax1 = fig.add_subplot(321)
-
-    if annotert:
-        ax1, ax2 = normaler_annotert(df)
-    else:
-        ax1, ax2 = plot_normaler(df)
-
-    ax3 = fig.add_subplot(322)
-    ax3, ax4 = snomengde(df)
-
-    ax5 = fig.add_subplot(323)
-    ax5 = plot_aarsnedbor(df)
-
-    ax6 = fig.add_subplot(324)
-    ax6, ax7 = snodjupne(df)
-
-    ax8 = fig.add_subplot(325)
-    ax8, ax9 = nysnodjupne_3d(df)
-
-    ax10 = fig.add_subplot(326)
-    ax10 = plot_ekstremverdier_3dsno(df)
-
-    fig.suptitle(f"Klimaoversikt for {lokalitet}", fontsize=30, y=0.9, va="bottom")
-
-    return fig
-
-
-def plot_ekstremverdier_3dsno(df, ax1=None):
-    maximal = maxdf(df)
-    liste = maximal["sdfsw3d"].tolist()
-    array = np.array(liste)
-    model = e.Gumbel(array, fit_method="mle", ci=0.05, ci_method="delta")
-
-    if ax1 is None:
-        ax1 = plt.gca()
-
-    return model.plot_return_values("3ds")
-
-
-def ekstrem_3d_sno_oversikt(df):
-    fig = plt.figure(figsize=(20, 8))
-
-    ax1 = fig.add_subplot(121)
-    ax1, ax2 = nysnodjupne_3d(df)
-
-    ax3 = fig.add_subplot(122)
-    ax3 = gammel_plot_ekstremverdier_3dsno(df)
 
     return fig
