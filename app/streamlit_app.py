@@ -11,6 +11,8 @@ import folium
 from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
 
+st.set_page_config(page_title="AV-Klima", page_icon=":snowflake:")
+
 st.title("AV-Klima")
 st.write("Enkel webapp for klimaanalyser basert på grid klimadata.")
 
@@ -43,7 +45,7 @@ y = 0
 st.write("Trykk i kartet, eller skriv inn koordinater for å velge klimapunkt.")
 st.write("Dersom du velger koordinat uten data, f.eks ved kyst eller midt i fjord vil du få feilmelding.")
 st.write(
-    "Finner automatisk nærmaste stadnavn dersom det er eit navn innafor 500m radius."
+    "Tjenesten finn automatisk nærmaste stadnavn dersom det er eit navn innafor 500m radius."
 )
 
 # Enkel måte å vente på klikk i kartet
@@ -106,7 +108,6 @@ if knapp:
 
     if plottype == "Klimaoversikt":
         st.pyplot(plot.klimaoversikt(df, lokalitet, annotert, klimadata.hent_hogde(x, y)))
-        plt.savefig('figure1.pdf')
         st.download_button(
             "Last ned klimadata",
             df.to_csv().encode("utf-8"),
@@ -114,6 +115,16 @@ if knapp:
             "text/csv",
             key="download-csv",
         )
+
+        plt.savefig(f'Klimaoversikt_{lokalitet}.pdf')
+        with open(f"Klimaoversikt_{lokalitet}.pdf", "rb") as file:
+            btn=st.download_button(
+            label="Last ned PDF plot",
+            data=file,
+            file_name=f"Klimaoversikt_{lokalitet}.pdf",
+            mime="application/octet-stream"
+        )
+
     if plottype == "Klimaoversikt med 3 døgn snø og returverdi":
         st.pyplot(plot.klima_sno_oversikt(df, lokalitet, annotert, klimadata.hent_hogde(x, y)))
         st.download_button(
@@ -123,11 +134,19 @@ if knapp:
             "text/csv",
             key="download-csv",
         )
+        plt.savefig(f'Klimaoversikt_{lokalitet}.pdf')
+        with open(f"Klimaoversikt_{lokalitet}.pdf", "rb") as file:
+            btn=st.download_button(
+            label="Last ned PDF plot",
+            data=file,
+            file_name=f"Klimaoversikt_{lokalitet}.pdf",
+            mime="application/octet-stream"
+        )
         st.write("Vær obs på bruk av returverdier basert på griddata. Verdiene i plottet bør vurderes som første grove vurdering av returverdi.")
         st.write("For meir nøyaktige vurderinger av returverdier anbefales NVE rapport 2014/22.")
 
     if vind:
-        st.header("Vind")
+        st.subheader("Vind")
         st.write("Vindrosa viser kva retning vinden kjem frå. Dei forskjellige fargeplot syner vindstyrke, regn og snø. Sjå dokumentasjon på link nederst for utvida forklaring.")
         vind_para = [
             "windDirection10m24h06",
@@ -147,6 +166,14 @@ if knapp:
             "vinddata.csv",
             "text/csv",
             key="download-csv-vind",
+        )
+        plt.savefig(f'Klimaoversikt_{lokalitet}.pdf')
+        with open(f"Klimaoversikt_{lokalitet}.pdf", "rb") as file:
+            btn=st.download_button(
+            label="Last ned PDF plot",
+            data=file,
+            file_name=f"Vindanalyse_for_{lokalitet}.pdf",
+            mime="application/octet-stream"
         )
 
 # st.write(
