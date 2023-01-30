@@ -151,6 +151,7 @@ def klima_dataframe(x, y, startdato, sluttdato, parametere) -> pd.DataFrame:
         )
     )
     df[df > 1000] = 0 #Kutter ut verdier som er større enn 1000, opprydding
+    df['fsw'] = df['rr'] * 0.1 #Lager fuktighetssvinn fra nedbør
     df = rullande_3dogn_nedbor(df)
     return df
 
