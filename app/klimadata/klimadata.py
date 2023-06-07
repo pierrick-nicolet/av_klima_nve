@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 
-@st.cache
+@st.cache_data
 def nve_api(x: str, y: str, startdato: str, sluttdato: str, para: str) -> list:
     """Henter data frå NVE api GridTimeSeries
 
@@ -49,7 +49,7 @@ def nve_api(x: str, y: str, startdato: str, sluttdato: str, para: str) -> list:
     verdier = r.json()
     return verdier
 
-@st.cache
+@st.cache_data
 def stedsnavn(x: str, y: str) -> list:
     """Henter stedsnavn fra geonorge api for stedsnavnsøk
     
@@ -155,7 +155,7 @@ def klima_dataframe(x, y, startdato, sluttdato, parametere) -> pd.DataFrame:
     df = rullande_3dogn_nedbor(df)
     return df
 
-@st.cache
+@st.cache_data
 def hent_hogde(x: str, y: str) -> str:
     """Henter ned høgdeverdi for koordinat fra NVE api
 
