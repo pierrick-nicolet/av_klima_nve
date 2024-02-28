@@ -198,5 +198,5 @@ st.write(
     "Sjå link under for forklaring på dei forskjellige plot og dokumentasjon av web appen."
 )
 st.markdown(link, unsafe_allow_html=True)
-st.write("Utvikla av Asplan Viak, v/Jan Helge Aalbu")
-st.write("Ved spørsmål eller feil ta kontakt på jan.aalbu@asplanviak.no")
+st.write("Utvikla av Asplan Viak, v/Jan Helge Aalbu for NVE.")
+st.write("Ved spørsmål eller feil ta kontakt med Pierrick Nicolet på psni@nve.no")
