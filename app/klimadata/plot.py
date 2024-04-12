@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.ticker import MultipleLocator
 from matplotlib.dates import DateFormatter
+from matplotlib.dates import MonthLocator
 import datetime
 import numpy as np
 from klimadata.klimadata import maxdf, vind_regn, vind_sno_fsw
@@ -239,7 +240,7 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
     '''
     aarsnedbor = df["rr"].groupby(pd.Grouper(freq="Y")).sum()
     aarsgjennomsnitt_1961_1990 = int(aarsnedbor.loc["1961":"1990"].mean())
-    aarsgjennomsnitt_1990_2020 = int(aarsnedbor.loc["1991":"2020"].mean())
+    aarsgjennomsnitt_1991_2020 = int(aarsnedbor.loc["1991":"2020"].mean())
     aarsnedbor_df = aarsnedbor.to_frame()
     aarsnedbor_df["dato"] = pd.date_range(
         start=str(aarsnedbor_df.index[0].year),
@@ -283,7 +284,7 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
         0.05,
         0.95,
         "Gjennomsnittlig årsnedbor(1991-2020):  "
-        + str(int(aarsgjennomsnitt_1990_2020))
+        + str(int(aarsgjennomsnitt_1991_2020))
         + " mm",
         transform=ax1.transAxes
     )
@@ -300,11 +301,11 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax2.hlines(
         y=aarsnedbor.mean(),
         xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
-        xmax=datetime.datetime.strptime("2022-12-31", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2023-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1958-2022",
+        label="Snitt 1958-2023",
     )
     ax2.hlines(
         y=aarsgjennomsnitt_1961_1990,
@@ -316,8 +317,8 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
         label="Snitt 1961-1990",
     )
     ax2.hlines(
-        y=aarsgjennomsnitt_1990_2020,
-        xmin=datetime.datetime.strptime("1990-01-01", "%Y-%m-%d"),
+        y=aarsgjennomsnitt_1991_2020,
+        xmin=datetime.datetime.strptime("1991-01-01", "%Y-%m-%d"),
         xmax=datetime.datetime.strptime("2020-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=2,
@@ -382,10 +383,10 @@ def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax1.set_title("Maksimal snødjupne")
     ax1.bar(sno_df.dato, sno_df["sd"], width=320, snap=False, color="powderblue")
     ax1.set_xlabel("Årstall")
-    ax1.set_ylabel("Snødjupn (cm)")
+    ax1.set_ylabel("Snødjupne (cm)")
     ax1.set_ylim(sno.min() * 0.6, sno.max() * 1.1)
     ax1.annotate(
-        "Maks snøhøgde: "
+        "Maks snødjupne: "
         + str(df["sd"].idxmax().date())
         + " | "
         + str(df["sd"].max())
@@ -409,11 +410,11 @@ def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax2.hlines(
         y=sno.mean(),
         xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
-        xmax=datetime.datetime.strptime("2022-12-31", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2023-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1958-2022",
+        label="Snitt 1958-2023",
     )
     ax2.hlines(
         y=snosnitt_6090,
@@ -536,11 +537,11 @@ def nysnodjupne_3d(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax2.hlines(
         y=max_df["sdfsw3d"].mean(),
         xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
-        xmax=datetime.datetime.strptime("2022-12-31", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2023-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1958-2022",
+        label="Snitt 1958-2023",
     )
     ax2.hlines(
         y=max_df["sdfsw3d"].loc["1961":"1990"].mean(),
@@ -603,31 +604,40 @@ def snomengde(df: pd.DataFrame, ax1=None) -> plt.Axes:
         )
     )
 
+    #Bruk 2024 til a konvertere til datoer med 02-29
+    snodager['date'] = ["2024-{}".format(x) for x in snodager.index]
+    snodager['date'] = pd.to_datetime(snodager['date'], format="%Y-%m-%d")
+
     if ax1 is None:
         ax1 = plt.gca()
 
-    ax1.plot(snodager.index, snodager["sd_snitt"], label="Snitt snømengde")
-    ax1.plot(snodager.index, snodager["sd_max"], label="Max snømengde")
-    ax1.plot(snodager.index, snodager["sd_min"], label="Min snømengde")
-    ax1.xaxis.set_major_locator(MultipleLocator(32))
+    ax1.plot(snodager['date'], snodager["sd_snitt"], label="Snitt snødjupne")
+    ax1.plot(snodager['date'], snodager["sd_max"], label="Max snødjupne")
+    ax1.plot(snodager['date'], snodager["sd_min"], label="Min snødjupne")
+    # ax1.plot(snodager.index, snodager["sd_snitt"], label="Snitt snømengde")
+    # ax1.plot(snodager.index, snodager["sd_max"], label="Max snømengde")
+    # ax1.plot(snodager.index, snodager["sd_min"], label="Min snømengde")
     ax1.set_title("Periode med snø - døgntemperatur (1991-2020)")
-    ax1.set_xlabel("Måned")
-    ax1.set_ylabel("Snøhøgde (cm)")
-    ax1.xaxis.set_major_formatter(DateFormatter("%m"))
+    ax1.set_xlabel("Månad")
+    ax1.set_ylabel("Snødjupne (cm)")
     ax1.legend()
 
     ax2 = ax1.twinx()
-    ax2.plot(snodager.index, snodager["tm"], "r--", label="Gjennomsnittstemperatur")
-    ax2.xaxis.set_major_locator(MultipleLocator(32))
+    ax2.plot(snodager['date'], snodager["tm"], "r--", label="Gjennomsnittstemperatur")
+    #ax2.text(x=0.5, y=0.5, s=snodager['date'][0], fontsize=10, ha="center", transform=ax2.transAxes)
+    #ax2.text(x=50, y=0.5, s=datetime.datetime.strptime("2024-{}".format(snodager.index[59]), "%Y-%m-%d").replace(year=2024), fontsize=10, ha="center")
+    #ax2.xaxis.set_major_locator(MultipleLocator(1))
+    ax2.xaxis.set_major_locator(MonthLocator())
+    ax2.xaxis.set_major_formatter(DateFormatter("%m"))
     ax2.legend(loc="lower left")
-    ax2.set_ylim(snodager["tm"].min() - 5, snodager["tm"].max() + 5)
+    #ax2.set_ylim(snodager["tm"].min() - 5, snodager["tm"].max() + 5)
     ax2.axhline(0, linestyle="--", color="grey", linewidth=0.5)
     ax2.set_ylabel("Temperatur (\u00B0C)")
 
     return ax1, ax2
 
 
-def vind(vind_df: pd.DataFrame) -> plt.Axes:
+def vind(vind_df: pd.DataFrame, lokalitet: str, hoyde: str, x: str,y: str) -> plt.Axes:
     '''Funksjon for å plotte vind mot nedbør og snø
 
     Plottet lager 3 subplots:
@@ -673,11 +683,18 @@ def vind(vind_df: pd.DataFrame) -> plt.Axes:
         f"%-vis med dagar vindretning og snø ({len(vind_sno_df['retning'])} dager)"
     )
     ax3.set_legend(title="Snø (fsw) (cm)")
+    
+    fig.suptitle(f"Vindaanalyse for {lokalitet} ({hoyde} moh.)", fontsize=30, y=0.65, va="bottom")
+
+    
+    # Footnote
+    plt.text(x=0.5, y=0.35, s="UTM33 {}N {}Ø".format(x,y), fontsize=10, ha="center", transform=fig.transFigure)
+    #plt.subplots_adjust(bottom=0.5, top=0.6, wspace=0.3)
 
     return fig
 
 
-def klimaoversikt(df: pd.DataFrame, lokalitet: str, annotert: bool, hoyde: str) -> plt.Figure:
+def klimaoversikt(df: pd.DataFrame, lokalitet: str, annotert: bool, hoyde: str, x: str,y: str) -> plt.Figure:
     '''Funksjonen lager sampleplot
     
     Parameters
@@ -716,11 +733,15 @@ def klimaoversikt(df: pd.DataFrame, lokalitet: str, annotert: bool, hoyde: str) 
     ax6, ax7 = snodjupne(df)
 
     fig.suptitle(f"Klimaoversikt for {lokalitet} ({hoyde} moh.)", fontsize=30, y=0.92, va="bottom")
+    
+    # Footnote
+    plt.text(x=0.5, y=0.05, s="UTM33 {}N {}Ø".format(x,y), fontsize=10, ha="center", transform=fig.transFigure)
+    #plt.subplots_adjust(bottom=0.5, wspace=0.3)
 
     return fig
 
 
-def klima_sno_oversikt(df, lokalitet, annotert, hoyde):
+def klima_sno_oversikt(df, lokalitet, annotert, hoyde, x: str,y: str):
     '''Funksjonen lager sampleplot
 
     Parameters
@@ -765,6 +786,10 @@ def klima_sno_oversikt(df, lokalitet, annotert, hoyde):
     ax10 = plot_ekstremverdier_3dsno(df)
 
     fig.suptitle(f"Klimaoversikt for {lokalitet} ({hoyde} moh.)", fontsize=30, y=0.92, va="bottom")
+    
+    # Footnote
+    plt.text(x=0.5, y=0.05, s="UTM33 {}N {}Ø".format(x,y), fontsize=10, ha="center", transform=fig.transFigure)
+    #plt.subplots_adjust(bottom=0.5, wspace=0.3)
 
     return fig
 
@@ -818,7 +843,7 @@ def ekstremverdi_3d_sd(df: pd.DataFrame, ax1=None) -> plt.Axes:
     )
 
     ax1.set_xlabel("Returperiode (År)")
-    ax1.set_ylabel("Maksimal årlig 3 døgns nysnøhøgde (cm)")
+    ax1.set_ylabel("Maksimal årlig 3 døgns nysnødjupne (cm)")
     ax1.text(
         100,
         summary["return value"].min() * 0.3,

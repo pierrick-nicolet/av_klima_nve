@@ -311,9 +311,9 @@ class _Base:
         if self.ci:
             #y1 = sT - st.norm.ppf(1 - self.ci / 2) * np.sqrt(self._ci_se)
             #y2 = sT + st.norm.ppf(1 - self.ci / 2) * np.sqrt(self._ci_se)
-            ax.semilogx(T, self._ci_Td, '--')
-            ax.semilogx(T, self._ci_Tu, '--')
-            ax.fill_between(T, self._ci_Td, self._ci_Tu, color = '0.75', alpha = 0.5)
+            ax.semilogx(T, self._ci_Td, '--', label='{:.1f} persentil'.format(100*(self.ci / 2)))
+            ax.semilogx(T, self._ci_Tu, '--', label='{:.1f} persentil'.format(100*(1 - self.ci / 2)))
+            ax.fill_between(T, self._ci_Td, self._ci_Tu, color = '0.75', alpha = 0.5, label='{:.1%} konfidensintervall'.format(1-self.ci))
             #e1000max = 
         #st.pyplot(fig)
         #(e100, e1000, e5000)
@@ -322,6 +322,8 @@ class _Base:
             '100 år returverdi: ' + str(round(e100)) + ' cm \n'
             '1000 år returverdi: ' + str(round(e1000)) + ' cm \n'
             '5000 år returverdi: ' + str(round(e5000)) + ' cm \n' )
+            
+        ax.legend(loc='upper left')
 
         return ax
         

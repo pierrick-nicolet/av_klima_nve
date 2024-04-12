@@ -77,7 +77,7 @@ lokalitet = st.text_input("Gi navn til lokalitet (brukes i tittel på plot)", na
 # Hardkoda start og sluttdato, det er mulig å utvide dette til å la bruker velge, 
 # men funksjoner for plotting er ikke utvikla for å håndtere dette
 startdato = "1958-01-01"
-sluttdato = "2022-12-31"
+sluttdato = "2023-12-31"
 
 #Lar brukere velge plotversjoner
 plottype = st.radio(
@@ -107,7 +107,7 @@ if knapp:
     st.write("Generering av plot tek litt tid, spesielt med returverdianalyse. Trykk på pil oppe i høgre hjørne av plot for å utvide.")
 
     if plottype == "Klimaoversikt":
-        st.pyplot(plot.klimaoversikt(df, lokalitet, annotert, klimadata.hent_hogde(x, y)))
+        st.pyplot(plot.klimaoversikt(df, lokalitet, annotert, klimadata.hent_hogde(x, y), x, y))
         st.download_button(
             "Last ned klimadata",
             df.to_csv().encode("utf-8"),
@@ -126,7 +126,7 @@ if knapp:
         )
 
     if plottype == "Klimaoversikt med 3 døgn snø og returverdi":
-        st.pyplot(plot.klima_sno_oversikt(df, lokalitet, annotert, klimadata.hent_hogde(x, y)))
+        st.pyplot(plot.klima_sno_oversikt(df, lokalitet, annotert, klimadata.hent_hogde(x, y), x ,y))
         st.download_button(
             "Last ned klimadata",
             df.to_csv().encode("utf-8"),
@@ -159,7 +159,7 @@ if knapp:
         vindslutt = "2022-03-01"
         vindstart = "2018-03-01"
         vind_df = klimadata.klima_dataframe(x, y, vindstart, vindslutt, vind_para)
-        st.pyplot(plot.vind(vind_df))
+        st.pyplot(plot.vind(vind_df, lokalitet, klimadata.hent_hogde(x, y), x, y))
         st.download_button(
             "Last ned vinddata",
             vind_df.to_csv().encode("utf-8"),
