@@ -15,6 +15,7 @@ st.set_page_config(page_title="AV-Klima", page_icon=":snowflake:")
 
 st.title("AV-Klima")
 st.write("Enkel webapp for klimaanalyser basert på grid klimadata.")
+st.info("Endringslogg:  \n20-06-2024: utvida periode for vinddata (no frå januar 2013 til desember 2023), vinddata i grader (tidlegare sektorar), justeringar i figurar, vising av nedbørssum", icon="ℹ️") #merk at 2 whitespaces er nødvendig før nylinjekommanden
 
 # Setter liste med parametere brukt i analyse, tenkt å kunne utvides
 parameterliste = ["rr", "tm", "sd", "fsw", "sdfsw", "sdfsw3d"]
@@ -36,6 +37,18 @@ folium.raster_layers.WmsTileLayer(
     control=True,
 ).add_to(m)
 
+folium.raster_layers.WmsTileLayer(
+    url="https://nve.geodataonline.no/arcgis/services/klimagrid/ImageServer/WMSServer?request=GetLegendGraphics%26version=1.3.0%26format=image/png%26layers=pr_senorge11_hist_orig-senorge11_none_norway_annual_1km_1971-2000",
+    name="Nedbørsum for hele året - (1971-2000)",
+    fmt="image/png",
+    layers="pr_senorge11_hist_orig-senorge11_none_norway_annual_1km_1971-2000",
+    attr='<a href="http://www.nve.no/">NVE</a>',
+    transparent=True,
+    overlay=True,
+    control=True,
+    opacity=0.5,
+).add_to(m)
+
 # Litt knotete måte å hente ut koordinater fra Streamlit, kanskje bedre i nye versjoner av streamlit? Ev. litt bedre måte i rein javascript?
 m.add_child(folium.ClickForMarker(popup="Waypoint"))
 output = st_folium(m, width=700, height=500)
@@ -43,6 +56,7 @@ output = st_folium(m, width=700, height=500)
 x = 0
 y = 0
 st.write("Trykk i kartet, eller skriv inn koordinater for å velge klimapunkt.")
+st.write("Kartet viser nedbørsum for heile året (1971-2000) og gjer tydeleg rutene som er brukte i modellen.")
 st.write("Dersom du velger koordinat uten data, f.eks ved kyst eller midt i fjord vil du få feilmelding.")
 st.write(
     "Tjenesten finn automatisk nærmaste stadnavn dersom det er eit navn innafor 500m radius."
@@ -156,8 +170,8 @@ if knapp:
             "fsw",
             "rrl",
         ]
-        vindslutt = "2022-03-01"
-        vindstart = "2018-03-01"
+        vindslutt = "2023-12-31"
+        vindstart = "2013-01-01"
         vind_df = klimadata.klima_dataframe(x, y, vindstart, vindslutt, vind_para)
         st.pyplot(plot.vind(vind_df, lokalitet, klimadata.hent_hogde(x, y), x, y))
         st.download_button(

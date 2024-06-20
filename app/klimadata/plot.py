@@ -651,7 +651,7 @@ def vind(vind_df: pd.DataFrame, lokalitet: str, hoyde: str, x: str,y: str) -> pl
     Parameters
     ----------
         vind_df
-            Dataframe med vinddata fra mars 2018 til mars 2022
+            Dataframe med vinddata fra september 2012 til desember 2023
         
     Returns
     -------
@@ -660,25 +660,25 @@ def vind(vind_df: pd.DataFrame, lokalitet: str, hoyde: str, x: str,y: str) -> pl
     
 
     '''
-    vind_df["retning"] = vind_df["windDirection10m24h06"] * 45
+    vind_df["retning"] = vind_df["windDirection10m24h06"]
     vind_regn_df = vind_regn(vind_df)
     vind_sno_df = vind_sno_fsw(vind_df)
     fig, (ax1, ax2, ax3) = plt.subplots(
         1, 3, subplot_kw=dict(projection="windrose"), figsize=(20, 20)
     )
 
-    ax1.bar(vind_df["retning"], vind_df["windSpeed10m24h06"], normed=True, opening=1.8)
+    ax1.bar(vind_df["retning"], vind_df["windSpeed10m24h06"], normed=True, opening=0.9)
     ax1.set_title(f"%-vis med dagar vindretning ({len(vind_df['retning'])} dager)")
     # ax1.legend(title='Vindstyrke (m/s')
     ax1.set_legend(title="Vindstyrke (m/s)")
 
-    ax2.bar(vind_regn_df["retning"], vind_regn_df["rrl"], normed=True, opening=1.8)
+    ax2.bar(vind_regn_df["retning"], vind_regn_df["rrl"], normed=True, opening=0.9)
     ax2.set_title(
         f"%-vis med dagar vindretning og regn ({len(vind_regn_df['retning'])} dager)"
     )
     ax2.set_legend(title="Regn (rrl) (mm)")
 
-    ax3.bar(vind_sno_df["retning"], vind_sno_df["fsw"], normed=True, opening=1.8)
+    ax3.bar(vind_sno_df["retning"], vind_sno_df["fsw"], normed=True, opening=0.9)
     ax3.set_title(
         f"%-vis med dagar vindretning og snø ({len(vind_sno_df['retning'])} dager)"
     )

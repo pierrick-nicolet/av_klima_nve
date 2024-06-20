@@ -29,10 +29,11 @@ def nve_api(x: str, y: str, startdato: str, sluttdato: str, para: str) -> list:
             returnerer ei liste med klimaverdier
 
     """
-    api = "http://h-web02.nve.no:8080/api/"
+    #api = "http://h-web02.nve.no:8080/api/"
+    api = "https://gts.nve.no/api/"
     url = (
         api
-        + "/GridTimeSeries/"
+        + "GridTimeSeries/"
         + str(x)
         + "/"
         + str(y)
