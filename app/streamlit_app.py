@@ -24,16 +24,16 @@ parameterliste = ["rr", "tm", "sd", "fsw", "sdfsw", "sdfsw3d"]
 transformer = Transformer.from_crs(4326, 5973)
 
 # Setter opp kartobjekt, med midtpunkt og zoom nivå
-m = folium.Map(location=[62.14497, 9.404296], zoom_start=5)
+m = folium.Map(location=[62.14497, 9.404296], zoom_start=5, tiles=None)
 #Legger til norgeskart som bakgrunn
 folium.raster_layers.WmsTileLayer(
-    url="https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}",
+    url="https://openwms.statkart.no/skwms1/wms.topograatone?request=layers=topograatone",
     name="Norgeskart",
     fmt="image/png",
-    layers="topo4",
+    layers="topograatone",
     attr='<a href="http://www.kartverket.no/">Kartverket</a>',
-    transparent=True,
-    overlay=True,
+    transparent=False,
+    overlay=False,
     control=True,
 ).add_to(m)
 
