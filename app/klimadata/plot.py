@@ -301,11 +301,11 @@ def plot_aarsnedbor(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax2.hlines(
         y=aarsnedbor.mean(),
         xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
-        xmax=datetime.datetime.strptime("2023-12-31", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2024-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1958-2023",
+        label="Snitt 1958-2024",
     )
     ax2.hlines(
         y=aarsgjennomsnitt_1961_1990,
@@ -410,11 +410,11 @@ def snodjupne(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax2.hlines(
         y=sno.mean(),
         xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
-        xmax=datetime.datetime.strptime("2023-12-31", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2024-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1958-2023",
+        label="Snitt 1958-2024",
     )
     ax2.hlines(
         y=snosnitt_6090,
@@ -537,11 +537,11 @@ def nysnodjupne_3d(df: pd.DataFrame, ax1=None) -> plt.Axes:
     ax2.hlines(
         y=max_df["sdfsw3d"].mean(),
         xmin=datetime.datetime.strptime("1958-01-01", "%Y-%m-%d"),
-        xmax=datetime.datetime.strptime("2023-12-31", "%Y-%m-%d"),
+        xmax=datetime.datetime.strptime("2024-12-31", "%Y-%m-%d"),
         linestyle="dashed",
         linewidth=1,
         color="y",
-        label="Snitt 1958-2023",
+        label="Snitt 1958-2024",
     )
     ax2.hlines(
         y=max_df["sdfsw3d"].loc["1961":"1990"].mean(),
@@ -651,7 +651,7 @@ def vind(vind_df: pd.DataFrame, lokalitet: str, hoyde: str, x: str,y: str) -> pl
     Parameters
     ----------
         vind_df
-            Dataframe med vinddata fra september 2012 til desember 2023
+            Dataframe med vinddata fra september 2012 til desember 2024
         
     Returns
     -------
@@ -688,7 +688,7 @@ def vind(vind_df: pd.DataFrame, lokalitet: str, hoyde: str, x: str,y: str) -> pl
 
     
     # Footnote
-    plt.text(x=0.5, y=0.35, s="UTM33 {}N {}Ø".format(x,y), fontsize=10, ha="center", transform=fig.transFigure)
+    plt.text(x=0.5, y=0.35, s="UTM33 {}N {}Ø".format(y,x), fontsize=10, ha="center", transform=fig.transFigure)
     #plt.subplots_adjust(bottom=0.5, top=0.6, wspace=0.3)
 
     return fig
@@ -735,7 +735,7 @@ def klimaoversikt(df: pd.DataFrame, lokalitet: str, annotert: bool, hoyde: str, 
     fig.suptitle(f"Klimaoversikt for {lokalitet} ({hoyde} moh.)", fontsize=30, y=0.92, va="bottom")
     
     # Footnote
-    plt.text(x=0.5, y=0.05, s="UTM33 {}N {}Ø".format(x,y), fontsize=10, ha="center", transform=fig.transFigure)
+    plt.text(x=0.5, y=0.05, s="UTM33 {}N {}Ø".format(y,x), fontsize=10, ha="center", transform=fig.transFigure)
     #plt.subplots_adjust(bottom=0.5, wspace=0.3)
 
     return fig
@@ -788,7 +788,7 @@ def klima_sno_oversikt(df, lokalitet, annotert, hoyde, x: str,y: str):
     fig.suptitle(f"Klimaoversikt for {lokalitet} ({hoyde} moh.)", fontsize=30, y=0.92, va="bottom")
     
     # Footnote
-    plt.text(x=0.5, y=0.05, s="UTM33 {}N {}Ø".format(x,y), fontsize=10, ha="center", transform=fig.transFigure)
+    plt.text(x=0.5, y=0.05, s="UTM33 {}N {}Ø".format(y,x), fontsize=10, ha="center", transform=fig.transFigure)
     #plt.subplots_adjust(bottom=0.5, wspace=0.3)
 
     return fig

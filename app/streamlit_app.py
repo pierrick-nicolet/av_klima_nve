@@ -10,12 +10,13 @@ from klimadata import plot
 import folium
 from streamlit_folium import st_folium
 import matplotlib.pyplot as plt
+from streamlit.components.v1 import html
 
 st.set_page_config(page_title="AV-Klima", page_icon=":snowflake:")
 
 st.title("AV-Klima")
 st.write("Enkel webapp for klimaanalyser basert på grid klimadata.")
-st.info("Endringslogg:  \n20-06-2024: utvida periode for vinddata (no frå januar 2013 til desember 2023), vinddata i grader (tidlegare sektorar), justeringar i figurar, vising av nedbørssum", icon="ℹ️") #merk at 2 whitespaces er nødvendig før nylinjekommanden
+st.info("Endringslogg:  \n18-02-2025: utvida periode for klimadata (no til desember 2024). Feil i visning av koordinatar retta.  \n20-06-2024: utvida periode for vinddata (no frå januar 2013 til desember 2023), vinddata i grader (tidlegare sektorar), justeringar i figurar, vising av nedbørssum", icon="ℹ️") #merk at 2 whitespaces er nødvendig før nylinjekommanden
 
 # Setter liste med parametere brukt i analyse, tenkt å kunne utvides
 parameterliste = ["rr", "tm", "sd", "fsw", "sdfsw", "sdfsw3d"]
@@ -91,7 +92,7 @@ lokalitet = st.text_input("Gi navn til lokalitet (brukes i tittel på plot)", na
 # Hardkoda start og sluttdato, det er mulig å utvide dette til å la bruker velge, 
 # men funksjoner for plotting er ikke utvikla for å håndtere dette
 startdato = "1958-01-01"
-sluttdato = "2023-12-31"
+sluttdato = "2024-12-31"
 
 #Lar brukere velge plotversjoner
 plottype = st.radio(
@@ -170,7 +171,7 @@ if knapp:
             "fsw",
             "rrl",
         ]
-        vindslutt = "2023-12-31"
+        vindslutt = "2024-12-31"
         vindstart = "2013-01-01"
         vind_df = klimadata.klima_dataframe(x, y, vindstart, vindslutt, vind_para)
         st.pyplot(plot.vind(vind_df, lokalitet, klimadata.hent_hogde(x, y), x, y))
@@ -214,3 +215,8 @@ st.write(
 st.markdown(link, unsafe_allow_html=True)
 st.write("Utvikla av Asplan Viak, v/Jan Helge Aalbu for NVE.")
 st.write("Ved spørsmål eller feil ta kontakt med Pierrick Nicolet på psni@nve.no")
+
+with open("Plausible.html") as f:
+    html_string = f.read()
+    html(html_string)
+
