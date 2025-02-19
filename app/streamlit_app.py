@@ -28,7 +28,7 @@ transformer = Transformer.from_crs(4326, 5973)
 m = folium.Map(location=[62.14497, 9.404296], zoom_start=5, tiles=None)
 #Legger til norgeskart som bakgrunn
 folium.raster_layers.WmsTileLayer(
-    url="https://openwms.statkart.no/skwms1/wms.topograatone?request=layers=topograatone",
+    url="https://wms.geonorge.no/skwms1/wms.topograatone?service=wms&request=getcapabilities",
     name="Norgeskart",
     fmt="image/png",
     layers="topograatone",
